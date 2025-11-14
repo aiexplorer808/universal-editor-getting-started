@@ -1,5 +1,5 @@
 mountpoints:
   /:
-    url: "https://author-p52710-e1559444.adobeaemcloud.com/bin/franklin.delivery/aiexplorer808/universal-editor-getting-started/main"
+    url: "https://author-p7906-e1488805.adobeaemcloud.com/bin/franklin.delivery/aiexplorer808/universal-editor-getting-started/main"
     type: "markup"
     suffix: ".html"

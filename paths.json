@@ -1,8 +1,8 @@
 {
   "mappings": [
-    "/content/testing-eds/:/",
-    "/content/testing-eds/configuration:/.helix/config.json",
-    "/content/testing-eds/metadata:/metadata.json"
+    "/content/pushpendu-eds/:/",
+    "/content/pushpendu-eds/configuration:/.helix/config.json",
+    "/content/pushpendu-eds/metadata:/metadata.json"
   ],
   "includes": [
     "/content/testing-eds/"

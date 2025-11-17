@@ -5,6 +5,6 @@
     "/content/pushpendu-eds/metadata:/metadata.json"
   ],
   "includes": [
-    "/content/testing-eds/"
+    "/content/pushpendu-eds/"
   ]
 }

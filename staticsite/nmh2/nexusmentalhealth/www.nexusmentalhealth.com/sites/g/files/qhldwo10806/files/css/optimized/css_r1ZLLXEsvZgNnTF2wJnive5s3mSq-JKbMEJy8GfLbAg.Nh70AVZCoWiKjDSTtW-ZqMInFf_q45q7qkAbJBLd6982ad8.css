@@ -1,0 +1,1 @@
+.logo{width:100%}.logo img{width:100%;height:auto}.header .logo{max-width:68px;transition:.4s ease}@media(min-width: 768px){.header .logo{max-width:125px}}@media(min-width: 992px){.header .logo{max-width:153px}}.footer .logo{max-width:116px}@media(min-width: 992px){.footer .logo{max-width:167px}}

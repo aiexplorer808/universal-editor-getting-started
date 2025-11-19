@@ -1,0 +1,1 @@
+!function(){var a;a=jQuery,Drupal.behaviors.mainMenu={attach:function(n){var e=a(".header",n);a(".navbar-toggler",e),e&&a(once("mainMenu",".header .navbar-toggler",n)).on("click",(function(){e.toggleClass("navbar--open")}))}}}();

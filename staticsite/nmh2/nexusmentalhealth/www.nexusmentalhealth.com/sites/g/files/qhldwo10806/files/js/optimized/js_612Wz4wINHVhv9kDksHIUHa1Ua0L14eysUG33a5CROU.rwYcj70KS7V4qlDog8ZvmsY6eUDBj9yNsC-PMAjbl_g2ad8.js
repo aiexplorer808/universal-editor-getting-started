@@ -1,0 +1,1 @@
+!function(){var o;o=jQuery,Drupal.behaviors.shareButton={attach:function(s){var n=o(".share-button",s),t=o(".addtoany_list",n);n.on("mouseover focusin",(function(){o(this).addClass("show")})).on("mouseout",(function(){o(this).removeClass("show")})),t.find("a:last-of-type").on("blur",(function(){n.removeClass("show")}))}}}();

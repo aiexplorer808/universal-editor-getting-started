@@ -1,0 +1,1 @@
+!function(){var n;n=jQuery,Drupal.behaviors.mapAnimation={attach:function(t){n(once("html",".image-content-animation__content",t)).each((function(){new IntersectionObserver((function(n){!0===n[0].isIntersecting&&n[0].target.classList.add("animation")}),{threshold:[.6]}).observe(this)}))}}}();

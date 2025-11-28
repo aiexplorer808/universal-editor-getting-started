@@ -1,0 +1,1 @@
+!function(){var e,i,a;e=jQuery,i=Drupal,a=once,i.behaviors.modalVideoEvents={attach:function(){e(a("modal-video",'a.modal-link[data-target="#view-video"]')).each((function(i,a){a.addEventListener("click",(function(){e(document).trigger("virtualVideoView",{data:{video_type:"vimeo"}})}))}))}}}();

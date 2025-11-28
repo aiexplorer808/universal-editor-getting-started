@@ -1,0 +1,1 @@
+((e,l,a)=>{l.behaviors.otsukaJynarqueHcpCollapsable={attach:function(l){a("collapsible-paragraph",".paragraph--type--collapsible",l).forEach(function(l){var a=e(l);e(".field_title",a).on("click",function(l){l.preventDefault(),a.toggleClass("collapsible-expanded"),e(this).toggleClass("collapsible-expanded"),a.find(".collapsible-content").slideToggle()})})}}})(jQuery,Drupal,once);

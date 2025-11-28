@@ -1,0 +1,1 @@
+(n=>{Drupal.behaviors.otsukaJynarqueHcpModalLink={attach:function(a){var e=document.createEvent("Event");e.initEvent("videoStop",!0,!0),n(".modal",a).on("hide.bs.modal",function(){n(this).find(".react-player").length&&document.dispatchEvent(e)}),n(once("otsukaJynarqueHcpModalLink",".modal",a)).detach().appendTo("body")}}})(jQuery);

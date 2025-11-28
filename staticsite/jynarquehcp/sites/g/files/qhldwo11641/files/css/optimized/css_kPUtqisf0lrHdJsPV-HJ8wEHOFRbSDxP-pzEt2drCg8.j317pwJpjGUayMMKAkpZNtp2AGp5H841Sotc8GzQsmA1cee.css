@@ -1,0 +1,343 @@
+@charset "UTF-8";
+
+/*
+ * @file:  pharma_isi_drawer.css
+ * boilerplate css for the drawer/tray that appears when both the "Enable ISI Footers Behavior" and "Enable Drawer UX Behavior" settings are enabled
+ *
+ */
+
+.isi-tray {
+  background: #ffffff;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  transition: opacity .25s ease;
+  width: 100%;
+  z-index: 500;
+}
+
+.isi-tray.hide-tray {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.isi-header {
+  background-color: #e6e7e8;
+  padding: 10px 15px;
+  position: relative;
+}
+
+@media all and (min-width: 768px) {
+  .isi-header {
+    padding: 9px 15px 11px;
+  }
+}
+
+.isi-header .drawer-title {
+  font: 22px/26px Arial, ​sans-serif;
+  margin: 0;
+  padding-right: 25px;
+  color: #f7941d;
+}
+
+@media all and (min-width: 768px) {
+  .isi-header .drawer-title {
+    font-size: 24px;
+    line-height: 28px;
+    padding-right: 104px;
+  }
+}
+
+.isi-content-wrap {
+  font-size: 16px;
+  line-height: 20px;
+  overflow: hidden;
+  padding: 0 0 0 15px;
+  transition: height .25s ease;
+  height: 0;
+  margin: 0 auto;
+  max-width: 860px;
+  width: 100%;
+}
+
+@media all and (min-width: 768px) {
+  .isi-content-wrap {
+    height: 180px;
+    min-height: 180px;
+    padding: 0 0 10px 10px;
+  }
+}
+
+.isi-content-wrap .content {
+  padding: 20px 0 0;
+}
+
+@media all and (min-width: 768px) {
+  .isi-content-wrap .content {
+    font-size: 16px;
+    line-height: 22px;
+  }
+}
+
+.isi-content-wrap .isi-drawer-content-heading {
+  color: #f7941d;
+  font: 22px/26px Arial, ​sans-serif;
+  margin: 10px 0 20px;
+}
+
+@media all and (min-width: 768px) {
+  .isi-content-wrap .isi-drawer-content-heading {
+    font-size: 24px;
+    line-height: 28px;
+  }
+}
+
+.isi-content-wrap .isi-block-title,
+.isi-content-wrap h3 {
+  color: #f7941d;
+  font: 22px/26px Arial, ​sans-serif;
+}
+
+@media all and (min-width: 768px) {
+  .isi-content-wrap .isi-block-title,
+  .isi-content-wrap h3 {
+    font-size: 24px;
+    line-height: 28px;
+  }
+}
+
+.isi-content-wrap .isi-block-title {
+  display: block;
+}
+
+.isi-content-wrap .nobullet {
+  list-style: none;
+}
+
+.isi-content-wrap .isi-body {
+  font-family: Arial, ​sans-serif;
+}
+
+.isi-content-wrap .box {
+  border: 2px solid #000000;
+  padding: 15px 10px;
+  margin: 0 0 20px;
+}
+
+.isi-content-wrap p {
+  margin: 0 0 20px;
+}
+
+.isi-content-wrap .phone {
+  font-family: Arial, ​sans-serif;
+  white-space: nowrap;
+}
+
+.isi-content-wrap .phone-link,
+.isi-content-wrap .phone-link a {
+  color: #595959 !important;
+  font-weight: 600;
+  text-decoration: none !important;
+}
+
+.isi-content-wrap .indications {
+  margin: 0 0 20px;
+  overflow: hidden;
+}
+
+.isi-content-wrap .indications p {
+  margin: 0;
+}
+
+.isi-content-wrap strong {
+  color: #000000;
+  font-family: Arial, ​sans-serif;
+}
+
+.isi-content-wrap ul {
+  margin: 0;
+}
+
+.isi-content-wrap ul li {
+  padding: 0 0 0 10px;
+  position: relative;
+  margin: 0;
+  list-style: none;
+}
+
+.isi-content-wrap ul li:before {
+  background: #58595b;
+  border-radius: 50%;
+  content: '';
+  height: 3px;
+  left: 0;
+  position: absolute;
+  top: 8px;
+  width: 3px;
+}
+
+.isi-content-wrap ul.nobullet {
+  list-style: none;
+}
+
+.isi-content-wrap ul.nobullet li {
+  list-style: none;
+}
+
+.isi-content-wrap ul.nobullet li:before {
+  content: none;
+}
+
+.isi-content-wrap .internal-links {
+  color: #000000;
+}
+
+@media all and (min-width: 768px) {
+  .isi-content-wrap .internal-links {
+    font-size: 16px;
+  }
+}
+
+.isi-content-wrap>div {
+  width: 100%;
+}
+
+@media all and (min-width: 768px) {
+  .isi-content-wrap>div {
+    height: 180px;
+  }
+}
+
+.isi-content-wrap .jcf-container {
+  padding-right: 10px;
+}
+
+.isi-content-wrap .jcf-scrollbar-vertical {
+  right: 6px;
+  top: 0;
+  width: 6px;
+}
+
+.isi-content-wrap .jcf-scrollbar-slider,
+.isi-content-wrap .mCSB_draggerContainer {
+  background-color: #f3f3f3;
+  width: 12px;
+}
+
+.isi-content-wrap .jcf-scrollbar-handle,
+.isi-content-wrap .mCSB_dragger {
+  background-color: #595959;
+  height: 30px !important;
+  width: 12px;
+}
+
+.isi-header-wrap {
+  margin: 0 auto;
+  max-width: 840px;
+  position: relative;
+}
+
+.isi-content {
+  margin: 0 auto;
+  max-width: 860px;
+  width: 100%;
+}
+
+.isi-content-title {
+  font: 600 16px/24px sans-serif;
+  margin: 10px 0;
+}
+
+.isi-btn {
+  background: none;
+  border: 0;
+  color: #f7941d;
+  cursor: pointer;
+  font: 600 15px/18px sans-serif;
+  outline: none;
+  position: absolute;
+  right: -6px;
+  top: 2px;
+}
+
+@media all and (min-width: 768px) {
+  .isi-btn {
+    line-height: 26px;
+    right: -2px;
+    top: 1px;
+    font-size: 18px;
+  }
+}
+
+.isi-btn .isi-btn-icon {
+  border: 2px solid #f7941d;
+  border-radius: 50%;
+  display: inline-block;
+  height: 20px;
+  margin-left: 15px;
+  position: relative;
+  vertical-align: middle;
+  width: 20px;
+}
+
+@media all and (min-width: 768px) {
+  .isi-btn .isi-btn-icon {
+    border: 2px solid transparent;
+    margin-left: 6px;
+  }
+}
+
+.isi-btn .isi-btn-icon:before,
+.isi-btn .isi-btn-icon:after {
+  background-color: #f7941d;
+  content: '';
+  height: 2px;
+  left: 4px;
+  position: absolute;
+  top: 7px;
+  width: 8px;
+}
+
+@media all and (min-width: 768px) {
+  .isi-btn .isi-btn-icon:before,
+  .isi-btn .isi-btn-icon:after {
+    height: 3px;
+    top: 7px;
+    width: 11px;
+  }
+}
+
+.isi-btn .isi-btn-icon:after {
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+}
+
+.isi-btn .close {
+  display: none;
+}
+
+.jsSwapText {
+  display: none;
+}
+
+@media all and (min-width: 768px) {
+  .jsSwapText {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  .jsSwapText.hide {
+    display: none;
+  }
+}
+
+.isi-drawer-expanded .isi-btn .close {
+  display: inline;
+}
+
+.isi-drawer-expanded .isi-btn .open {
+  display: none;
+}
+
+.isi-tray.isi-drawer-expanded .isi-btn-icon:after {
+  display: none;
+}

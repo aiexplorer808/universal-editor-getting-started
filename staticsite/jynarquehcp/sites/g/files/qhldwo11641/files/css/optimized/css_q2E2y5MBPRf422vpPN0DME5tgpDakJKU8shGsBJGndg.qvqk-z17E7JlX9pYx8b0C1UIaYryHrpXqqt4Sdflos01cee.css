@@ -1,0 +1,44 @@
+@charset "UTF-8";
+/*
+ * @file:  pharma_isi_inline.css
+ * boilerplate css for pharma_isi module block that appears inline in page templates, depending on block assignment
+ *
+*/
+
+#inline-isi-wrapper .isi-block-title,
+#inline-isi-wrapper h3,
+.isi-page .isi-block-title,
+.isi-page h3 {
+  color: #f7941d;
+  font: 22px/26px Arial, ​sans-serif;
+}
+@media all and (min-width: 768px) {
+  #inline-isi-wrapper .isi-block-title,
+  #inline-isi-wrapper h3,
+  .isi-page .isi-block-title,
+  .isi-page h3 {
+    font-size: 24px;
+    line-height: 28px;
+} }
+
+#inline-isi-wrapper .isi-block-title,
+.isi-page .isi-block-title {
+  display: block;
+}
+
+#inline-isi-wrapper .nobullet,
+.isi-page .nobullet {
+  list-style: none;
+}
+
+#inline-isi-wrapper .isi-body,
+.isi-page .isi-body {
+  font-family: Arial, ​sans-serif;
+}
+
+#inline-isi-wrapper .box,
+.isi-page .box {
+  border: 2px solid #000000;
+  padding: 15px 10px;
+  margin: 0 0 20px;
+}

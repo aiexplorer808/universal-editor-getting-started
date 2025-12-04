@@ -38870,7 +38870,7 @@
           596: "reactPlayerDailyMotion",
           664: "reactPlayerPreview",
           667: "reactPlayerMixcloud",
-          743: "reactPlayerVimeo",
+          743: "reactplayervimeo",
           888: "reactPlayerVidyard",
         }[e] || e) + ".min.js"
       );

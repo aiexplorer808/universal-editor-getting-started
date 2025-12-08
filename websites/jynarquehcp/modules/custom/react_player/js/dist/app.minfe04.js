@@ -38859,19 +38859,19 @@
     (o.u = function (e) {
       return (
         ({
-          11: "reactPlayerFilePlayer",
-          55: "reactPlayerWistia",
-          121: "reactPlayerFacebook",
-          125: "reactPlayerSoundCloud",
-          216: "reactPlayerTwitch",
-          261: "reactPlayerKaltura",
-          439: "reactPlayerYouTube",
-          546: "reactPlayerStreamable",
-          596: "reactPlayerDailyMotion",
-          664: "reactPlayerPreview",
-          667: "reactPlayerMixcloud",
-          743: "reactplayervimeo",
-          888: "reactPlayerVidyard",
+          11: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerFilePlayer",
+          55: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerWistia",
+          121: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerFacebook",
+          125: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerSoundCloud",
+          216: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerTwitch",
+          261: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerKaltura",
+          439: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerYouTube",
+          546: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerStreamable",
+          596: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerDailyMotion",
+          664: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerPreview",
+          667: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerMixcloud",
+          743: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactplayervimeo",
+          888: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerVidyard",
         }[e] || e) + ".min.js"
       );
     }),

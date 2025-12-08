@@ -38870,7 +38870,7 @@
           596: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerDailyMotion",
           664: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerPreview",
           667: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerMixcloud",
-          743: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactplayervimeo",
+          743: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerVimeo",
           888: "../../../../../websites/jynarquehcp/modules/custom/react_player/js/dist/reactPlayerVidyard",
         }[e] || e) + ".min.js"
       );

@@ -325,7 +325,7 @@
     input:checked
     + label::before {
     background: 0 1px / contain
-        url("/sites/g/files/qhldwo11596/themes/site/themes/custom/otsuka_ds2022_pba_info/dist/css/06-components/paragraph/quiz/../../../../../dist/img/icons/check-blue.svg");
+        url("../../../../../../../sites/g/files/qhldwo11596/themes/site/themes/custom/otsuka_ds2022_pba_info/dist/css/06-components/paragraph/quiz/../../../../../dist/img/icons/check-blue.svg");
 }
 .paragraph__quiz .quiz__item.sign-up .form-actions {
     display: flex;

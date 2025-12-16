@@ -1059,32 +1059,272 @@
     </div>
   </div>
 </div>
-                      <div class="field--item">
+<div class="field--item">
 
 
 
-  <div  id="healthgrades"  class="paragraph__block paragraph__block--default paragraph__healthgrades">
-    <div  class="container__container-full container-full">
+  <div id="healthgrades" class="paragraph__block paragraph__block--default paragraph__healthgrades">
+    <div class="container__container-full container-full">
               
 
 
 
 
   
-                  <div  class="field field-name-field-block field-type-entity-reference field-label-hidden">
+                  <div class="field field-name-field-block field-type-entity-reference field-label-hidden">
                       <div class="field--item">
 
 
 
-<div   id="block-healthgradesform" class="block__healthgrades-form-block otsuka-healthgrades">
-  <div  class="container__container-full container-full">
+<div id="block-healthgradesform" class="block__healthgrades-form-block otsuka-healthgrades">
+  <div class="container__container-full container-full">
     
         
           
 <div id="healthgrades-container">
-  <div id="hgbiol">
-    <a href="https://www.healthgrades.com/">Find a Pseudobulbar Affect Specialist on Healthgrades.</a>
-  </div>
+  <div id="hgbiol"><style id="hgbiol-styles">.hgbiol-search-widget {
+  font: 14px/1.4 sans-serif;
+  color: #666;
+  text-align: left;
+  width: 100%;
+}
+.hgbiol-search-tracking {
+  display: none;
+}
+.hgbiol-headline {
+  font-size: 24px;
+  color: #FDCDB7;
+  margin-bottom: 0.5em;
+  text-align: center;
+}
+.hgbiol-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1em;
+}
+.hgbiol-control {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #FDCDB7;
+  height: 52px;
+  padding: 0 10px;
+  background: #ffffff33;
+}
+.hgbiol-control-label {
+  font-size: 16px;
+  margin-bottom: 0.25em;
+  font-weight: 700;
+}
+.hgbiol-location-input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border: 0 !important;
+  background: transparent;
+  outline: none;
+  font-size: 16px;
+  line-height: 50px;
+  height: 50px;
+  padding: 0 10px;
+  color: #fff;
+}
+.hgbiol-location-input::placeholder {
+  color: #fff;
+  opacity: 1;
+}
+.hgbiol-location-submit {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  background: #CF0D52;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 99px;
+  padding: 0 20px;
+  transition: all 200ms ease-in-out;
+}
+.hgbiol-location-submit svg {
+  margin-left: 12px;
+  width: 30px;
+}
+.hgbiol-location-submit.is-disabled {
+  pointer-events: none;
+}
+.hgbiol-suggest {
+  position: relative;
+}
+.hgbiol-suggest-top {
+  display: none;
+}
+.hgbiol-suggestions {
+  position: absolute;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  font-size: 14px;
+  margin-top: -2px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 130px;
+  border-radius: 4px;
+}
+.hgbiol-suggestions-none {
+  padding: 5px 10px;
+  color: #333;
+}
+.hgbiol-suggestion {
+  display: block;
+  padding: 5px 10px;
+  margin: 1px 0;
+  color: #333;
+  text-decoration: none !important;
+  transition: 200ms ease-in-out;
+}
+.hgbiol-suggestion em {
+  font-weight: bold;
+}
+.hgbiol-suggestion:hover {
+  color: #fff;
+  background-color: #1450A6;
+}
+.hgbiol-powered {
+  margin: 0 0 0 -3px;
+  width: 172px;
+  height: 35px;
+  background: url('//apps.healthgrades.com/psw/hgbiol-nuedexta-pba-2/img/powered.svg') center center no-repeat;
+}
+.hgbiol-modal {
+  display: none;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10000;
+  -webkit-overflow-scrolling: touch;
+  outline: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.hgbiol-modal.is-visible {
+  display: block;
+}
+.hgbiol-modal-background {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.2);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 200px 5px 100px;
+}
+.hgbiol-modal-window {
+  position: relative;
+  background-color: #fff;
+  width: 100%;
+  max-width: 900px;
+  margin: auto;
+  border-radius: 8px;
+}
+.hgbiol-modal-header {
+  overflow: hidden;
+}
+.hgbiol-modal-close {
+  background: transparent;
+  border: none;
+  float: right;
+  width: 40px;
+  height: 40px;
+  margin: 10px;
+  text-align: center;
+  line-height: 20px;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+}
+.hgbiol-modal-close svg {
+  width: 20px;
+  height: 20px;
+  fill: #777;
+  transition: fill 200ms ease-in-out;
+  margin: 7px;
+}
+.hgbiol-modal-close:hover svg {
+  fill: #333;
+}
+.hgbiol-modal-body {
+  color: #333;
+  padding: 20px;
+}
+.hgbiol-modal-headline {
+  font-size: 40px;
+  font-weight: 700;
+  padding-top: 40px;
+  line-height: 1.2;
+  margin: 0 30px;
+  color: #1450A6;
+}
+.hgbiol-modal-message {
+  font-size: 20px;
+  line-height: 1.4;
+  padding: 30px;
+  opacity: 0.9;
+}
+.hgbiol-modal-footer {
+  display: flex;
+  position: relative;
+  padding: 0 40px 100px;
+}
+.hgbiol-modal-search {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  background: #CF0D52;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 99px;
+  padding: 0 20px;
+  transition: all 200ms ease-in-out;
+}
+.hgbiol-modal-search svg {
+  margin-left: 12px;
+  width: 30px;
+}
+.hgbiol-modal-cancel {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: #333;
+  margin-left: 20px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hgbiol-modal-code {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+}
+@media (max-width: 991px) {
+  .hgbiol-modal-background {
+    padding: 5px;
+  }
+}
+
+</style><div class="hgbiol hgbiol-search-widget hgbiol--lg"><div class="hgbiol-driver"><div class="hgbiol-headline">Search your location for a specialist near you</div><div class="hgbiol-group"><div class="hgbiol-control"><input type="text" class="hgbiol-location-input" data-1p-ignore="" autocomplete="off" placeholder="City, State or ZIP" value="Nārsingi, TELANGANA" data-default="Nārsingi, TELANGANA" title="Location"><div class="hgbiol-suggest"></div></div><div class="hgbiol-powered"></div></div><div class="hgbiol-actions"><button role="button" class="hgbiol-location-submit analytic-tags-processed" data-analytics-link="{&quot;name&quot;:&quot;Search&quot;,&quot;position&quot;:&quot;body&quot;,&quot;group&quot;:&quot;healthgrades&quot;,&quot;href&quot;:&quot;https://www.healthgrades.com/landing/pseudobulbar-affect-search-ub&quot;,&quot;exitmodal&quot;:true}">Search<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 8" width="25"><path fill="currentColor" d="M19.947 0 25 3.976 19.947 8V4.97H0V2.983h19.947V0Z"></path></svg></button></div></div><div class="hgbiol-modal"><div class="hgbiol-modal-background"><div class="hgbiol-modal-window"><div class="hgbiol-modal-header"><button type="button" class="hgbiol-modal-close analytic-tags-processed" data-analytics-link="{&quot;name&quot;:&quot;Close button&quot;,&quot;position&quot;:&quot;body&quot;,&quot;group&quot;:&quot;healthgrades&quot;,&quot;href&quot;:&quot;n/a&quot;}"><svg viewBox="0 0 21 21"><path d="M14.322 10.5l5.682 5.682c.34.34.511.757.511 1.25 0 .492-.17.928-.511 1.307l-1.25 1.25c-.379.34-.815.511-1.307.511a1.7 1.7 0 0 1-1.25-.511l-5.682-5.682-5.682 5.682a1.7 1.7 0 0 1-1.25.511c-.492 0-.928-.17-1.307-.511l-1.25-1.25a1.896 1.896 0 0 1-.51-1.307c0-.493.17-.91.51-1.25L6.708 10.5 1.026 4.818a1.7 1.7 0 0 1-.51-1.25c0-.492.17-.928.51-1.307l1.25-1.25c.38-.34.815-.51 1.307-.51.493 0 .91.17 1.25.51l5.682 5.682 5.682-5.682a1.7 1.7 0 0 1 1.25-.51c.492 0 .928.17 1.307.51l1.25 1.25c.34.38.511.815.511 1.307 0 .493-.17.91-.511 1.25L14.322 10.5z" fill-rule="nonzero"></path></svg></button></div><div class="hgbiol-modal-body"><div class="hgbiol-modal-headline">Are you sure you want to leave?</div><div class="hgbiol-modal-message">By clicking continue, you will be leaving this website and going to another, entirely independent website. These links are provided as a service to website visitors and users; however, no responsibility is taken for the information on other independent websites.</div></div><div class="hgbiol-modal-footer"><button type="button" class="hgbiol-modal-button hgbiol-modal-search analytic-tags-processed" data-analytics-link="{&quot;name&quot;:&quot;Continue&quot;,&quot;position&quot;:&quot;body&quot;,&quot;group&quot;:&quot;healthgrades&quot;,&quot;href&quot;:&quot;n/a&quot;}">Continue<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 25 8" width="25"><path fill="currentColor" d="M19.947 0 25 3.976 19.947 8V4.97H0V2.983h19.947V0Z"></path></svg></button><button type="button" class="hgbiol-modal-button hgbiol-modal-cancel analytic-tags-processed" data-analytics-link="{&quot;name&quot;:&quot;Cancel&quot;,&quot;position&quot;:&quot;body&quot;,&quot;group&quot;:&quot;healthgrades&quot;,&quot;href&quot;:&quot;n/a&quot;}">Cancel</button></div></div></div></div><div class="hgbiol-search-tracking"><img src="https://som.healthgrades.com/b/ss/hgprod/1/JS-1.3.1/s4163091282293?AQB=1&amp;ndh=1&amp;t=1765883462441&amp;fid=7003084F801E4E4F-0ED9C19B672C924B&amp;vid=deafca03-c63f-4bed-913d-2c5ceb01a619&amp;ce=UTF-8&amp;ns=healthgrades&amp;g=https://www.pbainfo.org/managing-pba&amp;c.&amp;hg.&amp;Server=hg3&amp;HourOfDay=4%3A41%20pm&amp;DayOfWeek=Tuesday&amp;WeekdayWeekend=Weekday&amp;BGPSVersion=widget&amp;Channel=b-GPS&amp;ClientID=NA-NeudextaUB2&amp;ContentType=b-GPS&amp;DisplayTemplate=desktop&amp;SubSection=pseudobulbar%20affect%3A%20b-gps&amp;SitePathing=pseudobulbar%20affect%3A%20b-gps%7Cdisclaimer%20opt-out&amp;DisclaimerOptOut=1&amp;.hg&amp;.c&amp;pe=lnk_o&amp;pev2=disclaimer opt-out&amp;AQE=1" width="1" height="1"></div></div></div>
 </div>
 
       </div>
@@ -1096,15 +1336,13 @@
           </div>
   </div>
 </div>
-                  </div>
-          
-  
-          </div>
-                  </div>
-      </div>
-  </div>
 </div>
-                      <div class="field--item">
+</div>
+</div>
+</div>
+</div>
+</div>
+
 
 
 

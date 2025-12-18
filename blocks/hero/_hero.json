@@ -24,20 +24,26 @@
           "component": "reference",
           "valueType": "string",
           "name": "image",
-          "label": "Image",
+          "label": "Background Image",
+          "multi": false
+        },
+        {
+          "component": "reference",
+          "valueType": "string",
+          "name": "video",
+          "label": "Background Video",
           "multi": false
         },
         {
           "component": "text",
           "valueType": "string",
           "name": "imageAlt",
-          "label": "Alt",
+          "label": "Alt Text",
           "value": ""
         },
         {
           "component": "richtext",
           "name": "text",
-          "value": "",
           "label": "Text",
           "valueType": "string"
         }

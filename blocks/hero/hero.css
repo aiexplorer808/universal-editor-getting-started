@@ -5,59 +5,33 @@
 
 .hero {
   position: relative;
-  min-height: 70vh;
   padding: 40px 24px;
-  display: flex;
-  align-items: center;
+  min-height: 300px;
 }
 
-.hero-content {
-  position: relative;
-  z-index: 2;
+.hero h1 {
   max-width: 1200px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   color: var(--background-color);
 }
 
-.hero h1,
-.hero p {
-  color: #fff;
-}
-
-/* Video background */
-.hero-video {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: 0;
-}
-
-/* Image fallback */
 .hero picture {
   position: absolute;
+  z-index: -1;
   inset: 0;
-  z-index: 0;
+  object-fit: cover;
+  box-sizing: border-box;
 }
 
 .hero img {
+  object-fit: cover;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-}
-
-/* Optional overlay for readability */
-.hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 1;
 }
 
 @media (width >= 900px) {
   .hero {
-    padding: 64px;
+    padding: 40px 32px;
   }
 }

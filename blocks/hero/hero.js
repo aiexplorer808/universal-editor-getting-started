@@ -1,5 +1,6 @@
+
 export default function decorate(block) {
-  const firstRow = block.querySelector(':scope > div:first-child');
+  const firstRow = block.firstElementChild;
   if (!firstRow) return;
 
   const DAM_BASE = 'https://author-p52710-e1559444.adobeaemcloud.com/content/dam/sample-wknd-app/en/image-files/';
@@ -21,5 +22,10 @@ export default function decorate(block) {
   video.className = 'hero-video';
   video.preload = 'metadata';
 
+  video.addEventListener('error', () => {
+    console.warn('Video failed to load:', explicitSrc);
+    firstRow.textContent =    firstRow.textContent = `Failed to load video: ${explicitSrc}`;
+  });
+
   firstRow.innerHTML = '';
-  firstRow.append(video  firstRow.append(video);
+  firstRow.append(video);

@@ -1,10 +1,8 @@
 export default function decorate(block) {
   const firstRow = block.querySelector(':scope > div:first-child');
-
   if (!firstRow) return;
 
   const videoLink = firstRow.querySelector('a[href$=".mp4"]');
-
   if (!videoLink) return;
 
   const video = document.createElement('video');

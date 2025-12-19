@@ -9,8 +9,6 @@ export default function decorate(block) {
 
   const video = document.createElement('video');
   video.src = videoLink.href;
-
-  
   video.autoplay = true;
   video.muted = true;
   video.loop = true;

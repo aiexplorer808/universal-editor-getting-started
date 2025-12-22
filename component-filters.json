@@ -15,7 +15,8 @@
       "hero",
       "cards",
       "columns",
-      "fragment"
+      "fragment",
+      "video"
     ]
   },
   {
@@ -38,5 +39,13 @@
       "button",
       "title"
     ]
+  },
+  {
+    "rule": "atLeastOne",
+    "fields": [
+      "assetPath",
+      "videoUrl"
+    ],
+    "message": "Provide either a DAM Asset or an External Video URL."
   }
 ]

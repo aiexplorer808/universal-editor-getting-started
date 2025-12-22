@@ -221,5 +221,148 @@
         "valueType": "string"
       }
     ]
+  },
+  {
+    "id": "video",
+    "fields": [
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "sourceType",
+        "label": "Source Type",
+        "options": [
+          {
+            "label": "DAM Asset",
+            "value": "dam"
+          },
+          {
+            "label": "External URL (YouTube/Vimeo/Brightcove)",
+            "value": "url"
+          }
+        ],
+        "default": "dam"
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "assetPath",
+        "label": "Video Asset (DAM)",
+        "accept": [
+          "video/mp4",
+          "video/webm",
+          "video/ogg"
+        ],
+        "visibleWhen": {
+          "sourceType": "dam"
+        },
+        "multi": false
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "videoUrl",
+        "label": "External Video URL",
+        "placeholder": "https://www.youtube.com/watch?v=… | https://vimeo.com/… | Brightcove player URL",
+        "visibleWhen": {
+          "sourceType": "url"
+        }
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "posterPath",
+        "label": "Thumbnail (Poster)",
+        "accept": [
+          "image/jpeg",
+          "image/png",
+          "image/webp"
+        ],
+        "multi": false
+      },
+      {
+        "component": "reference",
+        "valueType": "string",
+        "name": "captionsPath",
+        "label": "Captions (.vtt)",
+        "accept": [
+          "text/vtt"
+        ],
+        "multi": false
+      },
+      {
+        "component": "boolean",
+        "valueType": "boolean",
+        "name": "controls",
+        "label": "Show Controls",
+        "default": true
+      },
+      {
+        "component": "boolean",
+        "valueType": "boolean",
+        "name": "autoplay",
+        "label": "Autoplay",
+        "default": false
+      },
+      {
+        "component": "boolean",
+        "valueType": "boolean",
+        "name": "loop",
+        "label": "Loop",
+        "default": false
+      },
+      {
+        "component": "boolean",
+        "valueType": "boolean",
+        "name": "muted",
+        "label": "Muted",
+        "default": false
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "preload",
+        "label": "Preload",
+        "options": [
+          {
+            "label": "Metadata",
+            "value": "metadata"
+          },
+          {
+            "label": "Auto",
+            "value": "auto"
+          },
+          {
+            "label": "None",
+            "value": "none"
+          }
+        ],
+        "default": "metadata"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "aspectRatio",
+        "label": "Aspect Ratio",
+        "options": [
+          {
+            "label": "16:9",
+            "value": "16:9"
+          },
+          {
+            "label": "4:3",
+            "value": "4:3"
+          },
+          {
+            "label": "1:1",
+            "value": "1:1"
+          },
+          {
+            "label": "21:9",
+            "value": "21:9"
+          }
+        ],
+        "default": "16:9"
+      }
+    ]
   }
 ]

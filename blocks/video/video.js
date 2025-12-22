@@ -1,4 +1,3 @@
-
 function readConfigFromTable(block) {
   const table = block.querySelector('table');
   if (!table) return {};
@@ -61,7 +60,7 @@ function buildIframe(url, { autoplay, loop, controls }) {
   }
   const src = url.includes('?') ? `${url}&${params}` : `${url}?${params}`;
   const iframe = document.createElement('iframe');
-  iframe.className = 'video__iframe';
+  iframe.className = 'video-iframe';
   iframe.setAttribute('src', src);
   iframe.setAttribute('title', 'Video player');
   iframe.setAttribute('frameborder', '0');
@@ -74,20 +73,29 @@ function buildNativeVideo({
   assetPath, posterPath, captionsPath, controls, autoplay, loop, muted, preload,
 }) {
   const video = document.createElement('video');
-  video.className = 'video__native';
+  video.className = 'video-native';
   if (posterPath) video.setAttribute('poster', posterPath);
   video.setAttribute('playsinline', 'true');
   video.setAttribute('preload', preload || 'metadata');
   if (controls) video.setAttribute('controls', '');
   if (autoplay) video.setAttribute('autoplay', '');
   if (loop) video.setAttribute('loop', '');
-  if (autoplay && !muted) muted = true;
+  let finalMuted = muted;
+  if (autoplay && !finalMuted) { finalMuted = true; }
+
   if (muted) video.muted = true;
 
   const source = document.createElement('source');
   source.setAttribute('src', assetPath);
   const ext = (assetPath.split('.').pop() || '').toLowerCase();
-  const mime = ext === 'webm' ? 'video/webm' : ext === 'ogg' || ext === 'ogv' ? 'video/ogg' : 'video/mp4';
+  let mime = 'video/mp4';
+
+  if (ext === 'webm') {
+    mime = 'video/webm';
+  } else if (ext === 'ogg' || ext === 'ogv') {
+    mime = 'video/ogg';
+  }
+
   source.setAttribute('type', mime);
   video.appendChild(source);
 
@@ -120,17 +128,22 @@ export default async function decorate(block) {
   const aspect = computeAspect(cfg.aspectRatio);
 
   const container = document.createElement('div');
-  container.className = 'video__container';
+  container.className = 'video-container';
   container.style.setProperty('--video-aspect', aspect);
 
-  if (cfg.videoUrl && (isYouTube(cfg.videoUrl) || isVimeo(cfg.videoUrl) || isBrightcove(cfg.videoUrl))) {
+  if (
+    cfg.videoUrl
+    && (isYouTube(cfg.videoUrl)
+    || isVimeo(cfg.videoUrl)
+    || isBrightcove(cfg.videoUrl))
+  ) {
     if (cfg.posterPath) {
       const posterWrap = document.createElement('div');
-      posterWrap.className = 'video__poster';
+      posterWrap.className = 'video-poster';
       posterWrap.style.backgroundImage = `url("${cfg.posterPath}")`;
 
       const play = document.createElement('button');
-      play.className = 'video__play';
+      play.className = 'video-play';
       play.setAttribute('aria-label', 'Play video');
       play.innerHTML = '▶';
       posterWrap.appendChild(play);
@@ -153,11 +166,11 @@ export default async function decorate(block) {
     const video = buildNativeVideo(cfg);
     if (cfg.autoplay && cfg.posterPath) {
       const overlay = document.createElement('div');
-      overlay.className = 'video__poster';
+      overlay.className = 'video-poster';
       overlay.style.backgroundImage = `url("${cfg.posterPath}")`;
 
       const play = document.createElement('button');
-      play.className = 'video__play';
+      play.className = 'video-play';
       play.setAttribute('aria-label', 'Play video');
       play.innerHTML = '▶';
       overlay.appendChild(play);
@@ -173,7 +186,7 @@ export default async function decorate(block) {
     }
   } else {
     const warn = document.createElement('div');
-    warn.className = 'video__error';
+    warn.className = 'video-error';
     warn.textContent = 'No video source provided. Please set either "videoUrl" or "assetPath".';
     container.appendChild(warn);
   }

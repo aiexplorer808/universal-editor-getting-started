@@ -1,195 +1,171 @@
-function readConfigFromTable(block) {
-  const table = block.querySelector('table');
-  if (!table) return {};
-  const config = {};
-  [...table.rows].forEach((row) => {
-    const key = (row.cells[0]?.textContent || '').trim();
-    const val = (row.cells[1]?.textContent || '').trim();
-    if (key) config[key] = val;
-  });
-  table.remove();
-  return config;
+/*
+ * Video Block
+ * Show a video referenced by a link
+ * https://www.hlx.live/developer/block-collection/video
+ */
+
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+/**
+ * Determines the video source type from a link
+ * @param {string} link - The video link URL
+ * @returns {string} - 'youtube', 'vimeo', or 'video'
+ */
+function getVideoSource(link) {
+  if (link.includes('youtube') || link.includes('youtu.be')) return 'youtube';
+  if (link.includes('vimeo')) return 'vimeo';
+  return 'video';
 }
 
-function normalizeBoolean(val, fallback = false) {
-  if (typeof val === 'boolean') return val;
-  if (!val) return fallback;
-  return ['true', 'yes', '1', 'on'].includes(String(val).toLowerCase());
+/**
+ * Gets a human-readable video type label
+ * @param {string} source - The video source type ('youtube', 'vimeo', or 'video')
+ * @returns {string} - Human-readable label
+ */
+function getVideoTypeLabel(source) {
+  const labels = {
+    youtube: 'YouTube video',
+    vimeo: 'Vimeo video',
+    video: 'MP4 video',
+  };
+  return labels[source] || 'video';
 }
 
-function computeAspect(aspectRatio) {
-  switch ((aspectRatio || '').trim()) {
-    case '1:1': return 1;
-    case '4:3': return 4 / 3;
-    case '21:9': return 21 / 9;
-    case '16:9':
-    default: return 16 / 9;
+function embedYoutube(url, autoplay, background) {
+  const usp = new URLSearchParams(url.search);
+  let suffix = '';
+  if (background || autoplay) {
+    const suffixParams = {
+      autoplay: autoplay ? '1' : '0',
+      mute: background ? '1' : '0',
+      controls: background ? '0' : '1',
+      disablekb: background ? '1' : '0',
+      loop: background ? '1' : '0',
+      playsinline: background ? '1' : '0',
+    };
+    suffix = `&${Object.entries(suffixParams).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
   }
-}
-
-function isYouTube(url) {
-  return /youtube\.com|youtu\.be/.test(url);
-}
-function isVimeo(url) {
-  return /vimeo\.com/.test(url);
-}
-function isBrightcove(url) {
-  return /brightcove|players\.brightcove\.net/.test(url);
-}
-
-function buildIframe(url, { autoplay, loop, controls }) {
-  const params = new URLSearchParams();
-  if (isYouTube(url)) {
-    params.set('rel', '0');
-    params.set('modestbranding', '1');
-    params.set('playsinline', '1');
-    params.set('controls', controls ? '1' : '0');
-    if (autoplay) params.set('autoplay', '1');
-    if (loop) params.set('loop', '1');
-  } else if (isVimeo(url)) {
-    params.set('byline', '0');
-    params.set('portrait', '0');
-    params.set('title', '0');
-    params.set('controls', controls ? '1' : '0');
-    if (autoplay) params.set('autoplay', '1');
-    if (loop) params.set('loop', '1');
-  } else if (isBrightcove(url)) {
-    if (autoplay) params.set('autoplay', 'true');
-    if (loop) params.set('loop', 'true');
-    if (controls === false) params.set('controls', 'false');
+  let vid = usp.get('v') ? encodeURIComponent(usp.get('v')) : '';
+  const embed = url.pathname;
+  if (url.origin.includes('youtu.be')) {
+    [, vid] = url.pathname.split('/');
   }
-  const src = url.includes('?') ? `${url}&${params}` : `${url}?${params}`;
-  const iframe = document.createElement('iframe');
-  iframe.className = 'video-iframe';
-  iframe.setAttribute('src', src);
-  iframe.setAttribute('title', 'Video player');
-  iframe.setAttribute('frameborder', '0');
-  iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
-  iframe.setAttribute('allowfullscreen', '');
-  return iframe;
+
+  const temp = document.createElement('div');
+  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
+      <iframe src="https://www.youtube.com${vid ? `/embed/${vid}?rel=0&v=${vid}${suffix}` : embed}" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" 
+      allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope; picture-in-picture" allowfullscreen="" scrolling="no" title="Content from Youtube" loading="lazy"></iframe>
+    </div>`;
+  return temp.children.item(0);
 }
 
-function buildNativeVideo({
-  assetPath, posterPath, captionsPath, controls, autoplay, loop, muted, preload,
-}) {
+function embedVimeo(url, autoplay, background) {
+  const [, video] = url.pathname.split('/');
+  let suffix = '';
+  if (background || autoplay) {
+    const suffixParams = {
+      autoplay: autoplay ? '1' : '0',
+      background: background ? '1' : '0',
+    };
+    suffix = `?${Object.entries(suffixParams).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
+  }
+  const temp = document.createElement('div');
+  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
+      <iframe src="https://player.vimeo.com/video/${video}${suffix}" 
+      style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" 
+      frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen  
+      title="Content from Vimeo" loading="lazy"></iframe>
+    </div>`;
+  return temp.children.item(0);
+}
+
+function getVideoElement(source, autoplay, background) {
   const video = document.createElement('video');
-  video.className = 'video-native';
-  if (posterPath) video.setAttribute('poster', posterPath);
-  video.setAttribute('playsinline', 'true');
-  video.setAttribute('preload', preload || 'metadata');
-  if (controls) video.setAttribute('controls', '');
+  video.setAttribute('controls', '');
   if (autoplay) video.setAttribute('autoplay', '');
-  if (loop) video.setAttribute('loop', '');
-  let finalMuted = muted;
-  if (autoplay && !finalMuted) { finalMuted = true; }
-
-  if (muted) video.muted = true;
-
-  const source = document.createElement('source');
-  source.setAttribute('src', assetPath);
-  const ext = (assetPath.split('.').pop() || '').toLowerCase();
-  let mime = 'video/mp4';
-
-  if (ext === 'webm') {
-    mime = 'video/webm';
-  } else if (ext === 'ogg' || ext === 'ogv') {
-    mime = 'video/ogg';
+  if (background) {
+    video.setAttribute('loop', '');
+    video.setAttribute('playsinline', '');
+    video.removeAttribute('controls');
+    video.addEventListener('canplay', () => {
+      video.muted = true;
+      if (autoplay) video.play();
+    });
   }
 
-  source.setAttribute('type', mime);
-  video.appendChild(source);
+  const sourceEl = document.createElement('source');
+  sourceEl.setAttribute('src', source);
+  sourceEl.setAttribute('type', `video/${source.split('.').pop()}`);
+  video.append(sourceEl);
 
-  if (captionsPath) {
-    const track = document.createElement('track');
-    track.setAttribute('kind', 'captions');
-    track.setAttribute('srclang', 'en');
-    track.setAttribute('label', 'English');
-    track.setAttribute('src', captionsPath);
-    video.appendChild(track);
-  }
   return video;
 }
 
-export default async function decorate(block) {
-  const cfg = {
-    videoUrl: block.dataset.videoUrl,
-    assetPath: block.dataset.assetPath,
-    posterPath: block.dataset.posterPath,
-    captionsPath: block.dataset.captionsPath,
-    controls: normalizeBoolean(block.dataset.controls, true),
-    autoplay: normalizeBoolean(block.dataset.autoplay, false),
-    loop: normalizeBoolean(block.dataset.loop, false),
-    muted: normalizeBoolean(block.dataset.muted, false),
-    preload: block.dataset.preload || 'metadata',
-    aspectRatio: block.dataset.aspectRatio || '16:9',
-    ...readConfigFromTable(block),
-  };
+function loadVideoEmbed(block, link, autoplay, background) {
+  if (block.dataset.embedLoaded === 'true') return;
 
-  const aspect = computeAspect(cfg.aspectRatio);
+  const url = new URL(link);
+  const source = getVideoSource(link);
 
-  const container = document.createElement('div');
-  container.className = 'video-container';
-  container.style.setProperty('--video-aspect', aspect);
-
-  if (
-    cfg.videoUrl
-    && (isYouTube(cfg.videoUrl)
-    || isVimeo(cfg.videoUrl)
-    || isBrightcove(cfg.videoUrl))
-  ) {
-    if (cfg.posterPath) {
-      const posterWrap = document.createElement('div');
-      posterWrap.className = 'video-poster';
-      posterWrap.style.backgroundImage = `url("${cfg.posterPath}")`;
-
-      const play = document.createElement('button');
-      play.className = 'video-play';
-      play.setAttribute('aria-label', 'Play video');
-      play.innerHTML = '▶';
-      posterWrap.appendChild(play);
-
-      play.addEventListener('click', () => {
-        const iframe = buildIframe(cfg.videoUrl, {
-          autoplay: true, loop: cfg.loop, controls: cfg.controls,
-        });
-        container.replaceChildren(iframe);
-      });
-
-      container.appendChild(posterWrap);
-    } else {
-      const iframe = buildIframe(cfg.videoUrl, {
-        autoplay: cfg.autoplay, loop: cfg.loop, controls: cfg.controls,
-      });
-      container.appendChild(iframe);
-    }
-  } else if (cfg.assetPath) {
-    const video = buildNativeVideo(cfg);
-    if (cfg.autoplay && cfg.posterPath) {
-      const overlay = document.createElement('div');
-      overlay.className = 'video-poster';
-      overlay.style.backgroundImage = `url("${cfg.posterPath}")`;
-
-      const play = document.createElement('button');
-      play.className = 'video-play';
-      play.setAttribute('aria-label', 'Play video');
-      play.innerHTML = '▶';
-      overlay.appendChild(play);
-
-      play.addEventListener('click', () => {
-        container.replaceChildren(video);
-        video.play().catch(() => {});
-      });
-
-      container.appendChild(overlay);
-    } else {
-      container.appendChild(video);
-    }
+  if (source === 'youtube') {
+    const embedWrapper = embedYoutube(url, autoplay, background);
+    block.append(embedWrapper);
+    embedWrapper.querySelector('iframe').addEventListener('load', () => {
+      block.dataset.embedLoaded = true;
+    });
+  } else if (source === 'vimeo') {
+    const embedWrapper = embedVimeo(url, autoplay, background);
+    block.append(embedWrapper);
+    embedWrapper.querySelector('iframe').addEventListener('load', () => {
+      block.dataset.embedLoaded = true;
+    });
   } else {
-    const warn = document.createElement('div');
-    warn.className = 'video-error';
-    warn.textContent = 'No video source provided. Please set either "videoUrl" or "assetPath".';
-    container.appendChild(warn);
+    const videoEl = getVideoElement(link, autoplay, background);
+    block.append(videoEl);
+    videoEl.addEventListener('canplay', () => {
+      block.dataset.embedLoaded = true;
+    });
+  }
+}
+
+export default async function decorate(block) {
+  const placeholder = block.querySelector('picture');
+  const link = block.querySelector('a').href;
+  block.textContent = '';
+  block.dataset.embedLoaded = false;
+
+  const autoplay = block.classList.contains('autoplay');
+  if (placeholder) {
+    block.classList.add('placeholder');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'video-placeholder';
+    wrapper.append(placeholder);
+
+    if (!autoplay) {
+      const source = getVideoSource(link);
+      const videoType = getVideoTypeLabel(source);
+      const ariaLabel = `Play ${videoType}`;
+
+      wrapper.insertAdjacentHTML(
+        'beforeend',
+        `<div class="video-placeholder-play"><button type="button" title="${ariaLabel}" aria-label="${ariaLabel}"></button></div>`,
+      );
+      wrapper.addEventListener('click', () => {
+        wrapper.remove();
+        loadVideoEmbed(block, link, true, false);
+      });
+    }
+    block.append(wrapper);
   }
 
-  block.replaceChildren(container);
+  if (!placeholder || autoplay) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        observer.disconnect();
+        const playOnLoad = autoplay && !prefersReducedMotion.matches;
+        loadVideoEmbed(block, link, playOnLoad, autoplay);
+      }
+    });
+    observer.observe(block);
+  }
 }

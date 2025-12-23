@@ -130,10 +130,14 @@ function loadVideoEmbed(block, link, autoplay, background) {
 
 export default async function decorate(block) {
   const placeholder = block.querySelector('picture');
-  const href = block.querySelector('a').getAttribute('href');
-  const link = href.startsWith('/content/dam/')
-    ? `${window.location.origin}${href}`
-    : href;
+  const { href } = block.querySelector('a');
+  const link = href.replace(
+    /^https?:\/\/[^/]+/,
+    window.location.host.endsWith('.aem.live')
+      ? window.location.origin
+      : 'https://author-p52710-e1559444.adobeaemcloud.com',
+  );
+
   block.textContent = '';
   block.dataset.embedLoaded = false;
 

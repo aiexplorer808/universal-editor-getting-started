@@ -130,7 +130,7 @@ function loadVideoEmbed(block, link, autoplay, background) {
 
 export default async function decorate(block) {
   const placeholder = block.querySelector('picture');
-  const link = block.querySelector('a').href.replace(/^https?:\/\/[^/]+/, 'https://author.adobeaemcloud.com');
+  const link = block.querySelector('a').href.replace(/^https?:\/\/[^/]+/, 'https://author-p52710-e1559444.adobeaemcloud.com');
   block.textContent = '';
   block.dataset.embedLoaded = false;
 

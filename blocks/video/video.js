@@ -130,7 +130,7 @@ function loadVideoEmbed(block, link, autoplay, background) {
 
 export default async function decorate(block) {
   const placeholder = block.querySelector('picture');
-  const link = block.querySelector('a').href;
+  const link = 'https://author-p52710-e1559444.adobeaemcloud.com/content/dam/sample-wknd-app/en/image-files/biker%20video.mp4';
   block.textContent = '';
   block.dataset.embedLoaded = false;
 

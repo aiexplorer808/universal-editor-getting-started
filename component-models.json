@@ -226,23 +226,6 @@
     "id": "video",
     "fields": [
       {
-        "component": "select",
-        "valueType": "string",
-        "name": "sourceType",
-        "label": "Source Type",
-        "options": [
-          {
-            "label": "DAM Asset",
-            "value": "dam"
-          },
-          {
-            "label": "External URL (YouTube/Vimeo/Brightcove)",
-            "value": "url"
-          }
-        ],
-        "default": "dam"
-      },
-      {
         "component": "reference",
         "valueType": "string",
         "name": "assetPath",

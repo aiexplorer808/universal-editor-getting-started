@@ -263,16 +263,6 @@
         "multi": false
       },
       {
-        "component": "reference",
-        "valueType": "string",
-        "name": "captionsPath",
-        "label": "Captions (.vtt)",
-        "accept": [
-          "text/vtt"
-        ],
-        "multi": false
-      },
-      {
         "component": "boolean",
         "valueType": "boolean",
         "name": "controls",
@@ -299,52 +289,6 @@
         "name": "muted",
         "label": "Muted",
         "default": false
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "preload",
-        "label": "Preload",
-        "options": [
-          {
-            "label": "Metadata",
-            "value": "metadata"
-          },
-          {
-            "label": "Auto",
-            "value": "auto"
-          },
-          {
-            "label": "None",
-            "value": "none"
-          }
-        ],
-        "default": "metadata"
-      },
-      {
-        "component": "select",
-        "valueType": "string",
-        "name": "aspectRatio",
-        "label": "Aspect Ratio",
-        "options": [
-          {
-            "label": "16:9",
-            "value": "16:9"
-          },
-          {
-            "label": "4:3",
-            "value": "4:3"
-          },
-          {
-            "label": "1:1",
-            "value": "1:1"
-          },
-          {
-            "label": "21:9",
-            "value": "21:9"
-          }
-        ],
-        "default": "16:9"
       }
     ]
   }

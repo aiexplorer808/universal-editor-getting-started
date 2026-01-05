@@ -6,11 +6,6 @@ function getVideoSource(link) {
   return 'video';
 }
 
-/**
- * Gets a human-readable video type label
- * @param {string} source - The video source type ('youtube', 'vimeo', or 'video')
- * @returns {string} - Human-readable label
- */
 function getVideoTypeLabel(source) {
   const labels = {
     youtube: 'YouTube video',

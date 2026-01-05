@@ -1,16 +1,5 @@
-/*
- * Video Block
- * Show a video referenced by a link
- * https://www.hlx.live/developer/block-collection/video
- */
-
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-/**
- * Determines the video source type from a link
- * @param {string} link - The video link URL
- * @returns {string} - 'youtube', 'vimeo', or 'video'
- */
 function getVideoSource(link) {
   if (link.includes('youtube') || link.includes('youtu.be')) return 'youtube';
   if (link.includes('vimeo')) return 'vimeo';

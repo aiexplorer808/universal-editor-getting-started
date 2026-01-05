@@ -261,34 +261,6 @@
           "image/webp"
         ],
         "multi": false
-      },
-      {
-        "component": "boolean",
-        "valueType": "boolean",
-        "name": "controls",
-        "label": "Show Controls",
-        "default": true
-      },
-      {
-        "component": "boolean",
-        "valueType": "boolean",
-        "name": "autoplay",
-        "label": "Autoplay",
-        "default": false
-      },
-      {
-        "component": "boolean",
-        "valueType": "boolean",
-        "name": "loop",
-        "label": "Loop",
-        "default": false
-      },
-      {
-        "component": "boolean",
-        "valueType": "boolean",
-        "name": "muted",
-        "label": "Muted",
-        "default": false
       }
     ]
   }

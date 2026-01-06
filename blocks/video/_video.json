@@ -21,23 +21,13 @@
     {
       "id": "video",
       "fields": [
-
-        {
-          "component": "reference",
-          "valueType": "string",
-          "name": "assetPath",
-          "label": "Video Asset (DAM)",
-          "accept": ["video/mp4", "video/webm", "video/ogg"],
-          "visibleWhen": { "sourceType": "dam" },
-          "multi": false
-        },
         {
           "component": "text",
           "valueType": "string",
           "name": "videoUrl",
           "label": "External Video URL",
-          "placeholder": "https://www.youtube.com/watch?v=… | https://vimeo.com/… | Brightcove player URL",
-          "visibleWhen": { "sourceType": "url" }
+          "placeholder": "https://www.youtube.com/watch?v=… | https://vimeo.com/…",
+          "multi": false
         },
         {
           "component": "reference",
@@ -47,16 +37,8 @@
           "accept": ["image/jpeg", "image/png", "image/webp"],
           "multi": false
         }
-        
-        
       ]
     }
   ],
-  "filters": [
-    {
-      "rule": "atLeastOne",
-      "fields": ["assetPath", "videoUrl"],
-      "message": "Provide either a DAM Asset or an External Video URL."
-    }
-  ]
+  "filters": []
 }

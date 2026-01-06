@@ -6,72 +6,91 @@ function getVideoSource(link) {
 
 function embedYoutube(url) {
   const usp = new URLSearchParams(url.search);
-  const vid = usp.get('v') || url.pathname.split('/').pop();
+  let vid = usp.get('v') ? encodeURIComponent(usp.get('v')) : '';
+  const embed = url.pathname;
+  if (url.origin.includes('youtu.be')) {
+    [, vid] = url.pathname.split('/');
+  }
+
   const temp = document.createElement('div');
-  temp.innerHTML = `<div style="position:relative;padding-bottom:56.25%;height:0;">
-      <iframe src="https://www.youtube.com/embed/${vid}?rel=0"
-        style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen title="YouTube video"></iframe>
+  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
+      https://www.youtube.com${vid ? `/embed/${vid}?rel=0` : embed}</iframe>
     </div>`;
-  return temp.firstChild;
+  return temp.children.item(0);
 }
 
 function embedVimeo(url) {
-  const vid = url.pathname.split('/').pop();
+  const [, video] = url.pathname.split('/');
   const temp = document.createElement('div');
-  temp.innerHTML = `<div style="position:relative;padding-bottom:56.25%;height:0;">
-      <iframe src="https://player.vimeo.com/video/${vid}"
-        style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowfullscreen title="Vimeo video"></iframe>
+  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
+      https://player.vimeo.com/video/${video}</iframe>
     </div>`;
-  return temp.firstChild;
+  return temp.children.item(0);
 }
 
 function getVideoElement(source) {
   const video = document.createElement('video');
   video.setAttribute('controls', '');
   video.style.width = '100%';
+
   const sourceEl = document.createElement('source');
   sourceEl.setAttribute('src', source);
   sourceEl.setAttribute('type', `video/${source.split('.').pop()}`);
   video.append(sourceEl);
+
   return video;
 }
 
 function loadVideoEmbed(block, link) {
-  const url = new URL(link, window.location.href);
+  if (block.dataset.embedLoaded === 'true') return;
+
+  const url = new URL(link);
   const source = getVideoSource(link);
-  let element;
+
   if (source === 'youtube') {
-    element = embedYoutube(url);
+    const embedWrapper = embedYoutube(url);
+    block.append(embedWrapper);
+    embedWrapper.querySelector('iframe').addEventListener('load', () => {
+      block.dataset.embedLoaded = true;
+    });
   } else if (source === 'vimeo') {
-    element = embedVimeo(url);
+    const embedWrapper = embedVimeo(url);
+    block.append(embedWrapper);
+    embedWrapper.querySelector('iframe').addEventListener('load', () => {
+      block.dataset.embedLoaded = true;
+    });
   } else {
-    element = getVideoElement(link);
+    const videoEl = getVideoElement(link);
+    block.append(videoEl);
+    videoEl.addEventListener('canplay', () => {
+      block.dataset.embedLoaded = true;
+    });
   }
-  block.append(element);
 }
 
-export default function decorate(block) {
+export default async function decorate(block) {
   const placeholder = block.querySelector('picture');
-  const anchorEl = block.querySelector('a');
-  const link = anchorEl ? anchorEl.href : '';
+  const link = block.querySelector('a').href;
   block.textContent = '';
+  block.dataset.embedLoaded = false;
 
   if (placeholder) {
+    block.classList.add('placeholder');
     const wrapper = document.createElement('div');
     wrapper.className = 'video-placeholder';
     wrapper.append(placeholder);
+
+    const ariaLabel = 'Play video';
+
     wrapper.insertAdjacentHTML(
       'beforeend',
-      '<button type="button" class="play-btn">Play</button>',
+      `<div class="video-placeholder-play"><button type="button" title="${ariaLabel}" aria-label="${ariaLabel}"></button></div>`,
     );
-    wrapper.querySelector('button').addEventListener('click', () => {
+    wrapper.addEventListener('click', () => {
       wrapper.remove();
       loadVideoEmbed(block, link);
     });
+
     block.append(wrapper);
   } else {
     loadVideoEmbed(block, link);

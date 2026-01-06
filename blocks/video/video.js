@@ -1,7 +1,3 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import ReactPlayer from 'react-player';
-
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function getVideoSource(link) {
@@ -40,11 +36,11 @@ function embedYoutube(url, autoplay, background) {
   }
 
   const temp = document.createElement('div');
-  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
+  temp.innerHTML = `<div style="left:0;width:100%;height:0;position:relative;padding-bottom:56.25%;">
       <iframe src="https://www.youtube.com${vid ? `/embed/${vid}?rel=0&v=${vid}${suffix}` : embed}"
-        style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;"
-        allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope; picture-in-picture"
-        allowfullscreen="" scrolling="no" title="Content from Youtube" loading="lazy"></iframe>
+        style="border:0;top:0;left:0;width:100%;height:100%;position:absolute;"
+        allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope"
+        allowfullscreen="" scrolling="no" title="Content from YouTube" loading="lazy"></iframe>
     </div>`;
   return temp.children.item(0);
 }
@@ -57,9 +53,9 @@ function embedVimeo(url, autoplay, background) {
     suffix = `?${Object.entries(suffixParams).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
   }
   const temp = document.createElement('div');
-  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
+  temp.innerHTML = `<div style="left:0;width:100%;height:0;position:relative;padding-bottom:56.25%;">
       <iframe src="https://player.vimeo.com/video/${video}${suffix}"
-        style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;"
+        style="border:0;top:0;left:0;width:100%;height:100%;position:absolute;"
         frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen
         title="Content from Vimeo" loading="lazy"></iframe>
     </div>`;
@@ -94,8 +90,18 @@ function normalizeLink(link) {
   }
 }
 
-function loadVideoEmbedReact(block, link, autoplay, background, posterUrl) {
+/**
+ * Dynamic import of React, ReactDOM and ReactPlayer from CDN (esm.sh)
+ * so UE preview can render without a bundler.
+ */
+async function loadVideoEmbedReact(block, link, autoplay, background, posterUrl) {
   try {
+    const [{ default: React }, { createRoot }, { default: ReactPlayer }] = await Promise.all([
+      import('https://esm.sh/react@18.2.0'),
+      import('https://esm.sh/react-dom@18.2.0/client'),
+      import('https://esm.sh/react-player@2.14.0'),
+    ]);
+
     const mount = document.createElement('div');
     mount.className = 'video-react-mount';
     mount.style.position = 'relative';
@@ -143,51 +149,44 @@ function loadVideoEmbedReact(block, link, autoplay, background, posterUrl) {
         },
       },
       onReady: () => { block.dataset.embedLoaded = 'true'; },
-      onError: (e) => {
-        block.dataset.embedLoaded = 'false';
-        // eslint-disable-next-line no-console
-        console.error('ReactPlayer failed:', e);
-      },
+      onError: () => { block.dataset.embedLoaded = 'false'; },
     });
 
     const container = React.createElement('div', { style: { position: 'absolute', inset: 0 } }, player);
-
     root.render(container);
     return true;
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.warn('React mount failed, will fallback to legacy embed:', e);
     return false;
   }
 }
 
-function loadVideoEmbed(block, link, autoplay, background, posterUrl) {
+async function loadVideoEmbed(block, link, autoplay, background, posterUrl) {
   if (block.dataset.embedLoaded === 'true') return;
 
-  const mounted = loadVideoEmbedReact(block, link, autoplay, background, posterUrl);
+  const mounted = await loadVideoEmbedReact(block, link, autoplay, background, posterUrl);
   if (mounted) return;
 
-  const url = new URL(link);
-  const source = getVideoSource(link);
+  const url = new URL(link, window.location.href);
+  const source = getVideoSource(url.toString());
 
   if (source === 'youtube') {
     const embedWrapper = embedYoutube(url, autoplay, background);
     block.append(embedWrapper);
-    embedWrapper.querySelector('iframe').addEventListener('load', () => {
-      block.dataset.embedLoaded = 'true';
-    });
+    const iframe = embedWrapper.querySelector('iframe');
+    if (iframe) {
+      iframe.addEventListener('load', () => { block.dataset.embedLoaded = 'true'; });
+    }
   } else if (source === 'vimeo') {
     const embedWrapper = embedVimeo(url, autoplay, background);
     block.append(embedWrapper);
-    embedWrapper.querySelector('iframe').addEventListener('load', () => {
-      block.dataset.embedLoaded = 'true';
-    });
+    const iframe = embedWrapper.querySelector('iframe');
+    if (iframe) {
+      iframe.addEventListener('load', () => { block.dataset.embedLoaded = 'true'; });
+    }
   } else {
-    const videoEl = getVideoElement(link, autoplay, background);
+    const videoEl = getVideoElement(url.toString(), autoplay, background);
     block.append(videoEl);
-    videoEl.addEventListener('canplay', () => {
-      block.dataset.embedLoaded = 'true';
-    });
+    videoEl.addEventListener('canplay', () => { block.dataset.embedLoaded = 'true'; });
   }
 }
 
@@ -198,7 +197,6 @@ export default async function decorate(block) {
   const assetPath = block.dataset.assetPath || '';
   const videoUrl = block.dataset.videoUrl || '';
   const posterPath = block.dataset.posterPath || '';
-
   const link = (videoUrl || assetPath || (anchorEl ? anchorEl.href : '')).trim();
 
   block.textContent = '';

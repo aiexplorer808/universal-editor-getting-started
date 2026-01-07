@@ -15,7 +15,7 @@ function createAspectWrapper() {
   return wrapper;
 }
 
-function embedYoutube(url) {
+function embedYoutube(url, opts = {}) {
   const usp = new URLSearchParams(url.search);
   let vid = usp.get('v');
   if (!vid) {
@@ -26,14 +26,20 @@ function embedYoutube(url) {
 
   const wrapper = createAspectWrapper();
   const iframe = document.createElement('iframe');
-  iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(vid)}?rel=0`;
+
+  const params = new URLSearchParams();
+  params.set('rel', '0');
+  if (opts.autoplay) params.set('autoplay', '1');
+  params.set('playsinline', '1');
+
+  iframe.src = `https://www.youtube.com/embed/${encodeURIComponent(vid)}?${params.toString()}`;
   iframe.style.border = '0';
   iframe.style.position = 'absolute';
   iframe.style.top = '0';
   iframe.style.left = '0';
   iframe.style.width = '100%';
   iframe.style.height = '100%';
-  iframe.setAttribute('allow', 'fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope');
+  iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope');
   iframe.setAttribute('allowfullscreen', '');
   iframe.setAttribute('title', 'YouTube video');
   iframe.setAttribute('loading', 'lazy');
@@ -41,21 +47,26 @@ function embedYoutube(url) {
   return wrapper;
 }
 
-function embedVimeo(url) {
+function embedVimeo(url, opts = {}) {
   const parts = url.pathname.split('/').filter(Boolean);
   const vid = parts.pop();
   if (!vid) return null;
 
   const wrapper = createAspectWrapper();
   const iframe = document.createElement('iframe');
-  iframe.src = `https://player.vimeo.com/video/${encodeURIComponent(vid)}`;
+
+  const params = new URLSearchParams();
+  if (opts.autoplay) params.set('autoplay', '1');
+
+  const qs = params.toString();
+  iframe.src = `https://player.vimeo.com/video/${encodeURIComponent(vid)}${qs ? `?${qs}` : ''}`;
   iframe.style.border = '0';
   iframe.style.position = 'absolute';
   iframe.style.top = '0';
   iframe.style.left = '0';
   iframe.style.width = '100%';
   iframe.style.height = '100%';
-  iframe.setAttribute('allow', 'fullscreen; picture-in-picture');
+  iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
   iframe.setAttribute('allowfullscreen', '');
   iframe.setAttribute('title', 'Vimeo video');
   iframe.setAttribute('loading', 'lazy');
@@ -63,7 +74,7 @@ function embedVimeo(url) {
   return wrapper;
 }
 
-function getVideoElement(sourceUrl) {
+function getVideoElement(sourceUrl, opts = {}) {
   const wrapper = createAspectWrapper();
   const video = document.createElement('video');
   video.setAttribute('controls', '');
@@ -80,18 +91,29 @@ function getVideoElement(sourceUrl) {
   video.appendChild(sourceEl);
 
   wrapper.appendChild(video);
+
+  if (opts.autoplay) {
+    const tryPlay = () => {
+      const p = video.play?.();
+      if (p && typeof p.then === 'function') {
+        p.catch(() => {});
+      }
+    };
+    video.addEventListener('canplay', tryPlay, { once: true });
+  }
+
   return wrapper;
 }
 
-function loadVideoEmbed(block, link) {
+function loadVideoEmbed(block, link, opts = {}) {
   if (!link) return;
   const url = new URL(link, window.location.href);
   const srcType = getVideoSource(link);
 
   let element = null;
-  if (srcType === 'youtube') element = embedYoutube(url);
-  else if (srcType === 'vimeo') element = embedVimeo(url);
-  else element = getVideoElement(link);
+  if (srcType === 'youtube') element = embedYoutube(url, opts);
+  else if (srcType === 'vimeo') element = embedVimeo(url, opts);
+  else element = getVideoElement(link, opts);
 
   if (element) {
     block.textContent = '';
@@ -121,26 +143,12 @@ export default function decorate(block) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'play-btn';
-    btn.textContent = 'Play';
     btn.setAttribute('aria-label', 'Play video');
-    btn.style.position = 'absolute';
-    btn.style.left = '50%';
-    btn.style.top = '50%';
-    btn.style.transform = 'translate(-50%, -50%)';
-
-    ph.style.position = 'relative';
-    ph.style.paddingBottom = '56.25%';
-    ph.style.height = '0';
-
-    if (img) {
-      img.style.position = 'absolute';
-      img.style.inset = '0';
-    }
 
     ph.appendChild(btn);
     btn.addEventListener('click', () => {
       ph.remove();
-      loadVideoEmbed(block, link);
+      loadVideoEmbed(block, link, { autoplay: true });
     });
 
     block.appendChild(ph);

@@ -1,4 +1,3 @@
-
 {
   "definitions": [
     {
@@ -23,19 +22,21 @@
       "fields": [
         {
           "component": "text",
-          "valueType": "string",
           "name": "videoUrl",
-          "label": "External Video URL (only YouTube and Vimeo links are accepted)",
-          "placeholder": "https://www.youtube.com/watch?v=… | https://vimeo.com/…",
-          "multi": false
+          "label": "Video URL",
+          "valueType": "string"
         },
         {
           "component": "reference",
-          "valueType": "string",
-          "name": "posterPath",
-          "label": "Thumbnail (Poster)",
-          "accept": ["image/jpeg", "image/png", "image/webp"],
-          "multi": false
+          "name": "placeholder",
+          "label": "Placeholder Image",
+          "valueType": "string"
+        },
+        {
+          "component": "text",
+          "name": "caption",
+          "label": "Caption",
+          "valueType": "string"
         }
       ]
     }

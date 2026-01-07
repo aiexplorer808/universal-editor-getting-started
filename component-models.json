@@ -229,7 +229,7 @@
         "component": "text",
         "valueType": "string",
         "name": "videoUrl",
-        "label": "External Video URL",
+        "label": "External Video URL (only YouTube and Vimeo links are accepted)",
         "placeholder": "https://www.youtube.com/watch?v=… | https://vimeo.com/…",
         "multi": false
       },

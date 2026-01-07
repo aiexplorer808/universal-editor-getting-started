@@ -1,155 +1,70 @@
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
 function getVideoSource(link) {
   if (link.includes('youtube') || link.includes('youtu.be')) return 'youtube';
   if (link.includes('vimeo')) return 'vimeo';
   return 'video';
 }
 
-function getVideoTypeLabel(source) {
-  const labels = {
-    youtube: 'YouTube video',
-    vimeo: 'Vimeo video',
-    video: 'MP4 video',
-  };
-  return labels[source] || 'video';
-}
-
-function embedYoutube(url, autoplay, background) {
+function embedYoutube(url) {
   const usp = new URLSearchParams(url.search);
-  let suffix = '';
-  if (background || autoplay) {
-    const suffixParams = {
-      autoplay: autoplay ? '1' : '0',
-      mute: background ? '1' : '0',
-      controls: background ? '0' : '1',
-      disablekb: background ? '1' : '0',
-      loop: background ? '1' : '0',
-      playsinline: background ? '1' : '0',
-    };
-    suffix = `&${Object.entries(suffixParams).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
-  }
-  let vid = usp.get('v') ? encodeURIComponent(usp.get('v')) : '';
-  const embed = url.pathname;
-  if (url.origin.includes('youtu.be')) {
-    [, vid] = url.pathname.split('/');
-  }
-
+  const vid = usp.get('v') || url.pathname.split('/').pop();
   const temp = document.createElement('div');
-  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
-      <iframe src="https://www.youtube.com${vid ? `/embed/${vid}?rel=0&v=${vid}${suffix}` : embed}" style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" 
-      allow="autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope; picture-in-picture" allowfullscreen="" scrolling="no" title="Content from Youtube" loading="lazy"></iframe>
+  temp.innerHTML = `<div style='position:relative;padding-bottom:56.25%;height:0;'>
+      https://www.youtube.com/embed/${vid}?rel=0</iframe>
     </div>`;
-  return temp.children.item(0);
+  return temp.firstChild;
 }
 
-function embedVimeo(url, autoplay, background) {
-  const [, video] = url.pathname.split('/');
-  let suffix = '';
-  if (background || autoplay) {
-    const suffixParams = {
-      autoplay: autoplay ? '1' : '0',
-      background: background ? '1' : '0',
-    };
-    suffix = `?${Object.entries(suffixParams).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')}`;
-  }
+function embedVimeo(url) {
+  const vid = url.pathname.split('/').pop();
   const temp = document.createElement('div');
-  temp.innerHTML = `<div style="left: 0; width: 100%; height: 0; position: relative; padding-bottom: 56.25%;">
-      <iframe src="https://player.vimeo.com/video/${video}${suffix}" 
-      style="border: 0; top: 0; left: 0; width: 100%; height: 100%; position: absolute;" 
-      frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen  
-      title="Content from Vimeo" loading="lazy"></iframe>
+  temp.innerHTML = `<div style='position:relative;padding-bottom:56.25%;height:0;'>
+      https://player.vimeo.com/video/${vid}</iframe>
     </div>`;
-  return temp.children.item(0);
+  return temp.firstChild;
 }
 
-function getVideoElement(source, autoplay, background) {
+function getVideoElement(source) {
   const video = document.createElement('video');
   video.setAttribute('controls', '');
-  if (autoplay) video.setAttribute('autoplay', '');
-  if (background) {
-    video.setAttribute('loop', '');
-    video.setAttribute('playsinline', '');
-    video.removeAttribute('controls');
-    video.addEventListener('canplay', () => {
-      video.muted = true;
-      if (autoplay) video.play();
-    });
-  }
-
+  video.style.width = '100%';
   const sourceEl = document.createElement('source');
   sourceEl.setAttribute('src', source);
   sourceEl.setAttribute('type', `video/${source.split('.').pop()}`);
   video.append(sourceEl);
-
   return video;
 }
 
-function loadVideoEmbed(block, link, autoplay, background) {
-  if (block.dataset.embedLoaded === 'true') return;
-
-  const url = new URL(link);
+function loadVideoEmbed(block, link) {
+  const url = new URL(link, window.location.href);
   const source = getVideoSource(link);
-
+  let element;
   if (source === 'youtube') {
-    const embedWrapper = embedYoutube(url, autoplay, background);
-    block.append(embedWrapper);
-    embedWrapper.querySelector('iframe').addEventListener('load', () => {
-      block.dataset.embedLoaded = true;
-    });
+    element = embedYoutube(url);
   } else if (source === 'vimeo') {
-    const embedWrapper = embedVimeo(url, autoplay, background);
-    block.append(embedWrapper);
-    embedWrapper.querySelector('iframe').addEventListener('load', () => {
-      block.dataset.embedLoaded = true;
-    });
+    element = embedVimeo(url);
   } else {
-    const videoEl = getVideoElement(link, autoplay, background);
-    block.append(videoEl);
-    videoEl.addEventListener('canplay', () => {
-      block.dataset.embedLoaded = true;
-    });
+    element = getVideoElement(link);
   }
+  block.append(element);
 }
 
-export default async function decorate(block) {
-  const placeholder = block.querySelector('picture');
-  const link = block.querySelector('a').href;
+export default function decorate(block) {
+  const placeholder = block.querySelector('picture'); // Thumbnail
+  const anchorEl = block.querySelector('a'); // External URL
+  const link = anchorEl ? anchorEl.href : '';
   block.textContent = '';
-  block.dataset.embedLoaded = false;
 
-  const autoplay = block.classList.contains('autoplay');
   if (placeholder) {
-    block.classList.add('placeholder');
     const wrapper = document.createElement('div');
     wrapper.className = 'video-placeholder';
     wrapper.append(placeholder);
-
-    if (!autoplay) {
-      const source = getVideoSource(link);
-      const videoType = getVideoTypeLabel(source);
-      const ariaLabel = `Play ${videoType}`;
-
-      wrapper.insertAdjacentHTML(
-        'beforeend',
-        `<div class="video-placeholder-play"><button type="button" title="${ariaLabel}" aria-label="${ariaLabel}"></button></div>`,
-      );
-      wrapper.addEventListener('click', () => {
-        wrapper.remove();
-        loadVideoEmbed(block, link, true, false);
-      });
-    }
-    block.append(wrapper);
-  }
-
-  if (!placeholder || autoplay) {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        observer.disconnect();
-        const playOnLoad = autoplay && !prefersReducedMotion.matches;
-        loadVideoEmbed(block, link, playOnLoad, autoplay);
-      }
+    wrapper.insertAdjacentHTML('beforeend', '<button type=\'button\' class=\'play-btn\'>Play</button>');
+    wrapper.querySelector('button').addEventListener('click', () => {
+      wrapper.remove();
+      loadVideoEmbed(block, link);
     });
-    observer.observe(block);
+    block.append(wrapper);
+  } else {
+    loadVideoEmbed(block, link);
   }
 }

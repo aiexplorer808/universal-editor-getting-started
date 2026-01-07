@@ -158,7 +158,7 @@
           }
         },
         {
-          "title": "SoVM Video",
+          "title": "Video",
           "id": "video",
           "plugins": {
             "xwalk": {

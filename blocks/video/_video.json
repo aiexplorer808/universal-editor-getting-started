@@ -2,7 +2,7 @@
 {
   "definitions": [
     {
-      "title": "SoVM Video",
+      "title": "Video",
       "id": "video",
       "plugins": {
         "xwalk": {
@@ -25,7 +25,7 @@
           "component": "text",
           "valueType": "string",
           "name": "videoUrl",
-          "label": "External Video URL (only YouTube and Vimeo links are accepted)",
+          "label": "External Video URL",
           "placeholder": "https://www.youtube.com/watch?v=… | https://vimeo.com/…",
           "multi": false
         },

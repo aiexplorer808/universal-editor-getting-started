@@ -5,7 +5,6 @@
 }
 
 .video[data-embed-loaded='false']:not(.placeholder) {
-  /* reserve an approximate space to avoid extensive layout shifts */
   aspect-ratio: 16 / 9;
 }
 

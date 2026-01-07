@@ -1,3 +1,4 @@
+
 .video {
   text-align: center;
   max-width: 900px;
@@ -44,13 +45,14 @@
   object-fit: cover;
 }
 
+/* --- OLD BUTTON STYLE (COMMENTED OUT) ---
 .video .video-placeholder-play button {
   position: relative;
   display: block;
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  outline: 2px solid;
+  outline: 2px solid currentColor;
   padding: 0;
 }
 
@@ -63,7 +65,7 @@
   height: 24px;
   border-top: 12px solid transparent;
   border-bottom: 12px solid transparent;
-  border-left: 18px solid;
+  border-left: 18px solid currentColor;
   top: 50%;
   left: calc(50% + 2px);
   transform: translate(-50%, -50%);
@@ -74,4 +76,34 @@
   outline: 2px solid black;
   outline-offset: 2px;
   background-color: black;
+}
+*/
+
+/* --- NEW BUTTON STYLE (modern color syntax) --- */
+.play-btn {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 90%);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+  padding: 0;
+}
+
+.play-btn::before {
+  content: '';
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 14px solid rgb(0 0 0);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
 }

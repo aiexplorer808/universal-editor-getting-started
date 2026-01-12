@@ -26,13 +26,6 @@
           "name": "videoUrl",
           "label": "Video URL",
           "valueType": "string"
-        },
-        {
-          "component": "richtext",
-          "name": "text",
-          "value": "",
-          "label": "Text",
-          "valueType": "string"
         }
       ]
     }

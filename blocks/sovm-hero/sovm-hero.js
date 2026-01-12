@@ -1,4 +1,3 @@
-// eslint-disable-next-line no-unused-vars
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 function embedYoutube(url) {
@@ -16,18 +15,12 @@ function embedYoutube(url) {
     mute: '1',
   });
   const src = `https://www.youtube.com${vid ? `/embed/${vid}?${params}` : `${embed}?${params}`}`;
-
-  // structural wrapper to match live site's naming
   const wrapper = document.createElement('div');
-  wrapper.className = 'hero-video-background'; // <<< important
-  Object.assign(wrapper.style, {
-    left: '0',
-    width: '100%',
-    height: '0',
-    position: 'relative',
-    paddingBottom: '56.25%',
-  });
-
+  wrapper.style.left = '0';
+  wrapper.style.width = '100%';
+  wrapper.style.height = '0';
+  wrapper.style.position = 'relative';
+  wrapper.style.paddingBottom = '56.25%';
   const iframe = document.createElement('iframe');
   iframe.src = src;
   iframe.style.border = '0';
@@ -40,9 +33,7 @@ function embedYoutube(url) {
   iframe.allowFullscreen = true;
   iframe.scrolling = 'no';
   iframe.title = 'Content from YouTube';
-  // for true hero autoplay, avoid lazy to reduce race conditions
-  // iframe.loading = 'lazy'; // optional: comment out for autoplay reliability
-
+  iframe.loading = 'lazy';
   wrapper.appendChild(iframe);
   return wrapper;
 }
@@ -56,17 +47,14 @@ function embedVimeo(url) {
     loop: '1',
   });
   const src = `https://player.vimeo.com/video/${video}?${params}`;
-
+  // eslint-disable-next-line no-console
+  console.log(src);
   const wrapper = document.createElement('div');
-  wrapper.className = 'hero-video-background'; // <<< important
-  Object.assign(wrapper.style, {
-    left: '0',
-    width: '100%',
-    height: '0',
-    position: 'relative',
-    paddingBottom: '56.25%',
-  });
-
+  wrapper.style.left = '0';
+  wrapper.style.width = '100%';
+  wrapper.style.height = '0';
+  wrapper.style.position = 'relative';
+  wrapper.style.paddingBottom = '56.25%';
   const iframe = document.createElement('iframe');
   iframe.src = src;
   iframe.style.border = '0';
@@ -75,50 +63,36 @@ function embedVimeo(url) {
   iframe.style.width = '100%';
   iframe.style.height = '100%';
   iframe.style.position = 'absolute';
-  iframe.setAttribute('frameBorder', '0');
+  iframe.frameBorder = '0';
   iframe.allow = 'autoplay; fullscreen; picture-in-picture';
   iframe.allowFullscreen = true;
   iframe.title = 'Content from Vimeo';
-  // iframe.loading = 'lazy'; // optional
-
+  iframe.loading = 'lazy';
   wrapper.appendChild(iframe);
   return wrapper;
 }
 
 function getVideoElement(source) {
   const video = document.createElement('video');
-
-  // match live site's class naming & visibility behavior
-  video.className = 'hero__video-background hero__video-background--desktop d-none d-md-block';
-
-  // keep your autoplay-related attributes
+  video.style.maxWidth = '100%';
+  video.style.display = 'block';
+  video.style.margin = '0 auto';
   video.setAttribute('controls', '');
   video.setAttribute('autoplay', '');
   video.setAttribute('muted', '');
   video.setAttribute('playsinline', '');
   video.setAttribute('loop', '');
   video.setAttribute('preload', 'auto');
-
-  // styling equivalent to your CSS but inline for safety
-  video.style.maxWidth = '100%';
-  video.style.display = 'block';
-  video.style.margin = '0 auto';
-  video.style.aspectRatio = '16 / 9';
-  video.style.border = 'none';
-
   const sourceEl = document.createElement('source');
   sourceEl.setAttribute('src', source);
   sourceEl.setAttribute('type', `video/${source.split('.').pop()}`);
   video.append(sourceEl);
-
-  // programmatic play to reinforce autoplay
   video.addEventListener('canplay', () => {
     const playPromise = video.play();
     if (playPromise && typeof playPromise.then === 'function') {
       playPromise.catch(() => {});
     }
   });
-
   return video;
 }
 
@@ -132,10 +106,8 @@ const loadVideoEmbed = (block, link) => {
     console.warn('Hero block: Invalid video URL', link);
     return;
   }
-
   const isYoutube = /youtube\.com|youtu\.be/.test(url.href);
   const isVimeo = /vimeo\.com/.test(url.href);
-
   if (isYoutube) {
     const embedWrapper = embedYoutube(url);
     block.append(embedWrapper);
@@ -149,14 +121,8 @@ const loadVideoEmbed = (block, link) => {
       block.dataset.embedLoaded = 'true';
     });
   } else {
-    // HTML5 source video (mp4, webm, etc.)
-    const wrapper = document.createElement('div');
-    wrapper.className = 'hero-video-background'; // <<< match live
-    block.append(wrapper);
-
     const videoEl = getVideoElement(url.href);
-    wrapper.append(videoEl);
-
+    block.append(videoEl);
     videoEl.addEventListener('canplay', () => {
       block.dataset.embedLoaded = 'true';
     });
@@ -166,7 +132,6 @@ const loadVideoEmbed = (block, link) => {
 export default async function decorate(block) {
   const rows = [...block.children];
   let link = '';
-
   rows.forEach((row) => {
     const cells = [...row.children];
     if (cells.length === 0) return;
@@ -184,34 +149,28 @@ export default async function decorate(block) {
       link = cellText;
     }
   });
-
   if (!link) {
     const a = block.querySelector('a');
     if (a) link = a.href;
   }
-
   if (!link) {
     // eslint-disable-next-line no-console
     console.warn('Hero block: No video URL found');
     return;
   }
-
   block.textContent = '';
   block.dataset.embedLoaded = 'false';
-
-  // outer container with expected classes
-  block.classList.add('hero', 'hero--video_background', 'position-relative', 'overflow-hidden');
-
   const player = document.createElement('div');
   player.className = 'hero-player';
   block.append(player);
-
   const observer = new IntersectionObserver((entries) => {
     if (entries.some((e) => e.isIntersecting)) {
       observer.disconnect();
-      // If you really want reduced motion to stop autoplay, gate it here
-      // For parity with your current behavior, both branches load:
-      loadVideoEmbed(player, link);
+      if (!prefersReducedMotion.matches) {
+        loadVideoEmbed(player, link);
+      } else {
+        loadVideoEmbed(player, link);
+      }
     }
   });
   observer.observe(block);

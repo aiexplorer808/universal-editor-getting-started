@@ -21,6 +21,11 @@ function embedYoutube(url) {
     iv_load_policy: '3',
   });
 
+  if (vid) {
+    params.set('loop', '1');
+    params.set('playlist', vid);
+  }
+
   const src = `https://www.youtube.com${vid
     ? `/embed/${vid}?${params}`
     : `${embed}?${params}`}`;

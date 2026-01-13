@@ -13,7 +13,6 @@
   margin: 24px auto;
 }
 
-/* Hero heading */
 .hero h1 {
   max-width: 1200px;
   margin-left: auto;
@@ -21,7 +20,6 @@
   color: var(--background-color);
 }
 
-/* Background image */
 .hero picture {
   position: absolute;
   z-index: -1;
@@ -36,38 +34,137 @@
   height: 100%;
 }
 
-/* stylelint-disable-next-line selector-class-pattern */
-.ControlBar_module_controlBarWrapper__33f2e772 {
-  display: none;
+/* -------------------- TEXT OVERLAY -------------------- */
+
+.hero .cmp-text {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  pointer-events: auto;
+  color: var(--text-color);
 }
 
-/* Video styling */
-.hero video {
-  max-width: 100%;
-  display: block;
+.hero .cmp-text > * {
+  max-width: 1200px;
   margin: 0 auto;
-  aspect-ratio: 16 / 9;
-  border: none;
 }
 
-/* Responsive padding */
+.hero .cmp-text h1,
+.hero .cmp-text h2,
+.hero .cmp-text h3,
+.hero .cmp-text h4,
+.hero .cmp-text h5,
+.hero .cmp-text h6 {
+  color: var(--text-color);
+  margin: 0.5em 0;
+  line-height: 1.2;
+}
+
+.hero .cmp-text p {
+  margin: 0.75em 0;
+  line-height: 1.6;
+  color: var(--text-color);
+}
+
+.hero .cmp-text a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.hero .cmp-text a:hover,
+.hero .cmp-text a:focus {
+  text-decoration: none;
+  color: var(--link-hover-color);
+}
+
+.hero .cmp-text ul,
+.hero .cmp-text ol {
+  display: inline-block;
+  text-align: left;
+  margin: 0.75em auto;
+  padding-left: 1.25em;
+  color: var(--text-color);
+}
+
+.hero .cmp-text li {
+  margin: 0.5em 0;
+}
+
+.hero .cmp-text blockquote {
+  display: inline-block;
+  text-align: left;
+  margin: 1em auto;
+  padding: 0.5em 1em;
+  border-left: 4px solid var(--dark-color);
+  color: var(--text-color);
+  background: var(--light-color);
+  opacity: 0.95;
+}
+
+.hero .cmp-text img {
+  max-width: 100%;
+  height: auto;
+  display: inline-block;
+  margin: 0.5em auto;
+}
+
+/* -------------------- VIDEO / IFRAME -------------------- */
+.hero-video-background iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero .hero-player {
+  position: relative;
+  z-index: 0;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero .hero-player iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  pointer-events: auto;
+}
+
+.hero video {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  border: 0;
+  display: block;
+}
+
+
+/* -------------------- OVERLAY DARKEN -------------------- */
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--overlay-color, --text-color); /* fallback only */
+  z-index: 1;
+}
+
+/* -------------------- RESPONSIVE -------------------- */
+
 @media (width >= 900px) {
   .hero {
     padding: 40px 32px;
   }
-}
-
-
-/* Hide any native video controls */
-.hero video::-webkit-media-controls {
-  display: none !important;
-}
-
-.hero video::-moz-media-controls {
-  display: none !important;
-}
-
-
-.hero-video-background iframe {
-  pointer-events: none;
 }

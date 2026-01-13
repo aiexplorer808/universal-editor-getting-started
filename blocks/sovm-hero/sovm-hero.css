@@ -35,6 +35,11 @@
   height: 100%;
 }
 
+/* stylelint-disable-next-line selector-class-pattern */
+.ControlBar_module_controlBarWrapper__33f2e772 {
+  display: none;
+}
+
 /* Video styling */
 .hero video {
   max-width: 100%;
@@ -49,4 +54,19 @@
   .hero {
     padding: 40px 32px;
   }
+}
+
+
+/* Hide any native video controls */
+.hero video::-webkit-media-controls {
+  display: none !important;
+}
+
+.hero video::-moz-media-controls {
+  display: none !important;
+}
+
+
+.hero-video-background iframe {
+  pointer-events: none;
 }

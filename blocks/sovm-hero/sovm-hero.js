@@ -4,23 +4,37 @@ function embedYoutube(url) {
   const usp = new URLSearchParams(url.search);
   let vid = usp.get('v') ? encodeURIComponent(usp.get('v')) : '';
   const embed = url.pathname;
+
   if (url.origin.includes('youtu.be')) {
     [, vid] = url.pathname.split('/');
   }
+
   const params = new URLSearchParams({
-    rel: '0',
-    v: vid || '',
     autoplay: '1',
-    playsinline: '1',
     mute: '1',
+    playsinline: '1',
+    controls: '0',
+    modestbranding: '1',
+    rel: '0',
+    fs: '0',
+    disablekb: '1',
+    iv_load_policy: '3',
   });
-  const src = `https://www.youtube.com${vid ? `/embed/${vid}?${params}` : `${embed}?${params}`}`;
+
+  const src = `https://www.youtube.com${vid
+    ? `/embed/${vid}?${params}`
+    : `${embed}?${params}`}`;
+
   const wrapper = document.createElement('div');
-  wrapper.style.left = '0';
-  wrapper.style.width = '100%';
-  wrapper.style.height = '0';
-  wrapper.style.position = 'relative';
-  wrapper.style.paddingBottom = '56.25%';
+  wrapper.className = 'hero-video-background';
+  Object.assign(wrapper.style, {
+    left: '0',
+    width: '100%',
+    height: '0',
+    position: 'relative',
+    paddingBottom: '56.25%',
+  });
+
   const iframe = document.createElement('iframe');
   iframe.src = src;
   iframe.style.border = '0';
@@ -33,7 +47,7 @@ function embedYoutube(url) {
   iframe.allowFullscreen = true;
   iframe.scrolling = 'no';
   iframe.title = 'Content from YouTube';
-  iframe.loading = 'lazy';
+
   wrapper.appendChild(iframe);
   return wrapper;
 }
@@ -42,6 +56,7 @@ function embedVimeo(url) {
   const [, video] = url.pathname.split('/');
   const params = new URLSearchParams({
     autoplay: '1',
+    background: '1',
     playsinline: '1',
     muted: '1',
     loop: '1',
@@ -77,7 +92,6 @@ function getVideoElement(source) {
   video.style.maxWidth = '100%';
   video.style.display = 'block';
   video.style.margin = '0 auto';
-  video.setAttribute('controls', '');
   video.setAttribute('autoplay', '');
   video.setAttribute('muted', '');
   video.setAttribute('playsinline', '');

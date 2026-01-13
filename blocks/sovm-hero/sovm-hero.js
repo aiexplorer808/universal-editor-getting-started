@@ -26,9 +26,7 @@ function embedYoutube(url) {
     params.set('playlist', vid);
   }
 
-  const src = `https://www.youtube.com${vid
-    ? `/embed/${vid}?${params}`
-    : `${embed}?${params}`}`;
+  const src = `https://www.youtube.com${vid ? `/embed/${vid}?${params}` : `${embed}?${params}`}`;
 
   const wrapper = document.createElement('div');
   wrapper.className = 'hero-video-background';
@@ -67,14 +65,15 @@ function embedVimeo(url) {
     loop: '1',
   });
   const src = `https://player.vimeo.com/video/${video}?${params}`;
-  // eslint-disable-next-line no-console
-  console.log(src);
+
   const wrapper = document.createElement('div');
+  wrapper.className = 'hero-video-background';
   wrapper.style.left = '0';
   wrapper.style.width = '100%';
   wrapper.style.height = '0';
   wrapper.style.position = 'relative';
   wrapper.style.paddingBottom = '56.25%';
+
   const iframe = document.createElement('iframe');
   iframe.src = src;
   iframe.style.border = '0';
@@ -88,6 +87,7 @@ function embedVimeo(url) {
   iframe.allowFullscreen = true;
   iframe.title = 'Content from Vimeo';
   iframe.loading = 'lazy';
+
   wrapper.appendChild(iframe);
   return wrapper;
 }
@@ -102,9 +102,11 @@ function getVideoElement(source) {
   video.setAttribute('playsinline', '');
   video.setAttribute('loop', '');
   video.setAttribute('preload', 'auto');
+
   const sourceEl = document.createElement('source');
   sourceEl.setAttribute('src', source);
   sourceEl.setAttribute('type', `video/${source.split('.').pop()}`);
+
   video.append(sourceEl);
   video.addEventListener('canplay', () => {
     const playPromise = video.play();
@@ -115,8 +117,9 @@ function getVideoElement(source) {
   return video;
 }
 
-const loadVideoEmbed = (block, link) => {
+function loadVideoEmbed(block, link) {
   if (block.dataset.embedLoaded === 'true') return;
+
   let url;
   try {
     url = new URL(link, window.location.origin);
@@ -125,8 +128,10 @@ const loadVideoEmbed = (block, link) => {
     console.warn('Hero block: Invalid video URL', link);
     return;
   }
+
   const isYoutube = /youtube\.com|youtu\.be/.test(url.href);
   const isVimeo = /vimeo\.com/.test(url.href);
+
   if (isYoutube) {
     const embedWrapper = embedYoutube(url);
     block.append(embedWrapper);
@@ -146,51 +151,64 @@ const loadVideoEmbed = (block, link) => {
       block.dataset.embedLoaded = 'true';
     });
   }
-};
+}
 
 export default async function decorate(block) {
-  const rows = [...block.children];
+  block.classList.add('hero');
+  const rows = Array.from(block.children);
   let link = '';
+  let linkRow = null;
+
   rows.forEach((row) => {
-    const cells = [...row.children];
-    if (cells.length === 0) return;
-    const cell = cells[0];
-    const cellText = cell.textContent.trim();
+    const cells = Array.from(row.children);
+    const cell = cells[0] || row;
     const a = cell.querySelector('a');
-    if (a && a.href) {
+    const cellText = (cell.textContent || '').trim();
+
+    if (!link && a && a.href) {
       link = a.href;
-    } else if (
-      cellText
-      && (cellText.startsWith('http://')
-      || cellText.startsWith('https://')
-      || cellText.startsWith('/'))
-    ) {
+      linkRow = row;
+      return;
+    }
+    if (!link && /^(https?:\/\/|\/)/.test(cellText)) {
       link = cellText;
+      linkRow = row;
     }
   });
-  if (!link) {
-    const a = block.querySelector('a');
-    if (a) link = a.href;
-  }
-  if (!link) {
-    // eslint-disable-next-line no-console
-    console.warn('Hero block: No video URL found');
-    return;
-  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'cmp-text';
+  const frag = document.createDocumentFragment();
+  rows.forEach((row) => {
+    if (row !== linkRow) frag.append(row.cloneNode(true));
+  });
+  overlay.append(frag);
+
   block.textContent = '';
   block.dataset.embedLoaded = 'false';
+
+  if (overlay.childNodes.length) {
+    block.append(overlay);
+  }
+
+  if (!link) {
+    return;
+  }
+
   const player = document.createElement('div');
   player.className = 'hero-player';
   block.append(player);
+
+  const start = () => loadVideoEmbed(player, link);
   const observer = new IntersectionObserver((entries) => {
     if (entries.some((e) => e.isIntersecting)) {
       observer.disconnect();
       if (!prefersReducedMotion.matches) {
-        loadVideoEmbed(player, link);
+        start();
       } else {
-        loadVideoEmbed(player, link);
+        start();
       }
     }
-  });
+  }, { rootMargin: '200px' });
   observer.observe(block);
 }

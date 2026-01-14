@@ -1,4 +1,9 @@
 
+:root {
+  --title-font-family: "Vulf Sans", sans-serif;
+}
+
+
 .section.sovm-hero-container,
 .sovm-hero-container {
   padding: 0;
@@ -55,7 +60,7 @@
   text-align: left;
   pointer-events: auto;
   color: var(--background-color);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--title-font-family) !important;
 }
 
 .hero .cmp-text > *,

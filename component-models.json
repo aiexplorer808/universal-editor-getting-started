@@ -897,8 +897,14 @@
     "fields": [
       {
         "component": "text",
-        "name": "videoUrl",
-        "label": "Video URL",
+        "name": "desktopVideoUrl",
+        "label": "Desktop Video URL",
+        "valueType": "string"
+      },
+      {
+        "component": "text",
+        "name": "mobileVideoUrl",
+        "label": "Mobile Video URL",
         "valueType": "string"
       },
       {

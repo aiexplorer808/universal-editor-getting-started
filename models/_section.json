@@ -72,7 +72,8 @@
         "video",
         "recaptcha-form-v2",
         "icon-button",
-        "sovm-carousel"
+        "sovm-carousel",
+        "sovm-hero"
       ]
     }
   ]

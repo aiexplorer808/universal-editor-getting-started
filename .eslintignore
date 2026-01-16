@@ -1,3 +1,13 @@
 helix-importer-ui
 dompurify.min.js
-websites/*
+alpine.min.js
+faintly.js
+faintly-debug.js
+figma-eds-mcp-server
+block-builder
+test-*.mjs
+test-*.js
+plugins/*
+svgxuse.min.js
+jquery.min.js
+slick.min.js

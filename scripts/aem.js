@@ -9,6 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+import { SERVERS } from './constants.js';
 
 /* eslint-env browser */
 function sampleRUM(checkpoint, data) {
@@ -515,6 +516,43 @@ function decorateSections(main) {
 }
 
 /**
+ * Gets placeholders object.
+ * @param {string} [prefix] Location of placeholders
+ * @returns {object} Window placeholders object
+ */
+// eslint-disable-next-line import/prefer-default-export
+async function fetchPlaceholders(prefix = 'default') {
+  window.placeholders = window.placeholders || {};
+  if (!window.placeholders[prefix]) {
+    window.placeholders[prefix] = new Promise((resolve) => {
+      fetch(`${prefix === 'default' ? '' : prefix}/placeholders.json`)
+        .then((resp) => {
+          if (resp.ok) {
+            return resp.json();
+          }
+          return {};
+        })
+        .then((json) => {
+          const placeholders = {};
+          json.data
+            .filter((placeholder) => placeholder.Key)
+            .forEach((placeholder) => {
+              placeholders[toCamelCase(placeholder.Key)] = placeholder.Text;
+            });
+          window.placeholders[prefix] = placeholders;
+          resolve(window.placeholders[prefix]);
+        })
+        .catch(() => {
+          // error loading placeholders
+          window.placeholders[prefix] = {};
+          resolve(window.placeholders[prefix]);
+        });
+    });
+  }
+  return window.placeholders[`${prefix}`];
+}
+
+/**
  * Builds a block DOM Element from a two dimensional array, string, or object
  * @param {string} blockName name of the block
  * @param {*} content two dimensional array or string or object of content
@@ -687,6 +725,33 @@ async function loadSections(element) {
   }
 }
 
+async function isAuthor() {
+  return window?.location?.origin?.includes('author');
+}
+
+async function getCFData(persistedQuery, contentPath, variationName) {
+  const url = isAuthor()
+    ? `${SERVERS.author}${persistedQuery};path=${contentPath};variation=${variationName};ts=${
+      Math.random() * 1000
+    }`
+    : `${SERVERS.publisher}${persistedQuery};path=${contentPath};variation=${variationName};ts=${
+      Math.random() * 1000
+    }`;
+
+  const options = { credentials: 'include' };
+  const cfReq = await fetch(url, options)
+    .then((response) => response.json())
+    .then((contentfragment) => {
+      let data = '';
+      if (contentfragment.data) {
+        data = contentfragment.data[Object.keys(contentfragment.data)[0]].item;
+      }
+      return data;
+    });
+
+  return cfReq;
+}
+
 init();
 
 export {
@@ -713,4 +778,7 @@ export {
   toClassName,
   waitForFirstImage,
   wrapTextNodes,
+  isAuthor,
+  getCFData,
+  fetchPlaceholders,
 };

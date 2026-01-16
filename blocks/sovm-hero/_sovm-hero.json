@@ -2,7 +2,7 @@
 {
   "definitions": [
     {
-      "title": "Sovm-Hero",
+      "title": "Sovm Hero",
       "id": "sovm-hero",
       "plugins": {
         "xwalk": {

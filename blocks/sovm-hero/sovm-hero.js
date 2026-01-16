@@ -1,4 +1,6 @@
-const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const prefersReducedMotion = window.matchMedia(
+  '(prefers-reduced-motion: reduce)',
+);
 
 function embedYoutube(url) {
   const usp = new URLSearchParams(url.search);
@@ -26,7 +28,9 @@ function embedYoutube(url) {
     params.set('playlist', vid);
   }
 
-  const src = `https://www.youtube.com${vid ? `/embed/${vid}?${params}` : `${embed}?${params}`}`;
+  const src = `https://www.youtube.com${
+    vid ? `/embed/${vid}?${params}` : `${embed}?${params}`
+  }`;
 
   const wrapper = document.createElement('div');
   wrapper.className = 'hero-video-background';
@@ -200,15 +204,18 @@ export default async function decorate(block) {
   block.append(player);
 
   const start = () => loadVideoEmbed(player, link);
-  const observer = new IntersectionObserver((entries) => {
-    if (entries.some((e) => e.isIntersecting)) {
-      observer.disconnect();
-      if (!prefersReducedMotion.matches) {
-        start();
-      } else {
-        start();
+  const observer = new IntersectionObserver(
+    (entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        observer.disconnect();
+        if (!prefersReducedMotion.matches) {
+          start();
+        } else {
+          start();
+        }
       }
-    }
-  }, { rootMargin: '200px' });
+    },
+    { rootMargin: '200px' },
+  );
   observer.observe(block);
 }

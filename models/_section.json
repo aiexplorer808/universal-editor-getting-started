@@ -27,12 +27,20 @@
         },
         {
           "component": "multiselect",
-          "name": "style",
+          "name": "style", 
           "label": "Style",
           "options": [
             {
               "name": "Highlight",
               "value": "highlight"
+            },
+            {
+              "name": "Background Gray",
+              "value": "bg-primary"
+            },
+            {
+              "name": "Background Green",
+              "value": "bg-secondary"
             }
           ]
         }
@@ -43,16 +51,28 @@
     {
       "id": "section",
       "components": [
-        "text",
-        "image",
+        "accordions",
+        "audio",
         "button",
-        "title",
-        "hero",
         "cards",
+        "carousel",
         "columns",
+        "embed",
+        "flip-cards",
         "fragment",
+        "hero",
+        "image",
+        "scrolling-timeline",
+        "tabs",
+        "text",
+        "title",
+        "panels",
+        "slides",
+        "lottie-player",
         "video",
-        "sovm-hero"
+        "recaptcha-form-v2",
+        "icon-button",
+        "sovm-carousel"
       ]
     }
   ]

@@ -1,221 +1,216 @@
-const prefersReducedMotion = window.matchMedia(
-  '(prefers-reduced-motion: reduce)',
-);
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-function embedYoutube(url) {
-  const usp = new URLSearchParams(url.search);
-  let vid = usp.get('v') ? encodeURIComponent(usp.get('v')) : '';
-  const embed = url.pathname;
-
-  if (url.origin.includes('youtu.be')) {
-    [, vid] = url.pathname.split('/');
+function isDirectMediaUrl(u = '') {
+  try {
+    const url = new URL(u, window.location.origin);
+    if (/youtube\.com|youtu\.be|vimeo\.com/i.test(url.hostname)) return false;
+    const pathname = url.pathname.toLowerCase();
+    return (
+      pathname.endsWith('.mp4')
+      || pathname.endsWith('.webm')
+      || pathname.endsWith('.ogg')
+      || pathname.endsWith('.ogv')
+      || pathname.endsWith('.m3u8')
+    );
+  } catch (e) {
+    return false;
   }
-
-  const params = new URLSearchParams({
-    autoplay: '1',
-    mute: '1',
-    playsinline: '1',
-    controls: '0',
-    modestbranding: '1',
-    rel: '0',
-    fs: '0',
-    disablekb: '1',
-    iv_load_policy: '3',
-  });
-
-  if (vid) {
-    params.set('loop', '1');
-    params.set('playlist', vid);
-  }
-
-  const src = `https://www.youtube.com${
-    vid ? `/embed/${vid}?${params}` : `${embed}?${params}`
-  }`;
-
-  const wrapper = document.createElement('div');
-  wrapper.className = 'hero-video-background';
-  Object.assign(wrapper.style, {
-    left: '0',
-    width: '100%',
-    height: '0',
-    position: 'relative',
-    paddingBottom: '56.25%',
-  });
-
-  const iframe = document.createElement('iframe');
-  iframe.src = src;
-  iframe.style.border = '0';
-  iframe.style.top = '0';
-  iframe.style.left = '0';
-  iframe.style.width = '100%';
-  iframe.style.height = '100%';
-  iframe.style.position = 'absolute';
-  iframe.allow = 'autoplay; fullscreen; picture-in-picture; encrypted-media; accelerometer; gyroscope';
-  iframe.allowFullscreen = true;
-  iframe.scrolling = 'no';
-  iframe.title = 'Content from YouTube';
-
-  wrapper.appendChild(iframe);
-  return wrapper;
 }
 
-function embedVimeo(url) {
-  const [, video] = url.pathname.split('/');
-  const params = new URLSearchParams({
-    autoplay: '1',
-    background: '1',
-    playsinline: '1',
-    muted: '1',
-    loop: '1',
-  });
-  const src = `https://player.vimeo.com/video/${video}?${params}`;
-
-  const wrapper = document.createElement('div');
-  wrapper.className = 'hero-video-background';
-  wrapper.style.left = '0';
-  wrapper.style.width = '100%';
-  wrapper.style.height = '0';
-  wrapper.style.position = 'relative';
-  wrapper.style.paddingBottom = '56.25%';
-
-  const iframe = document.createElement('iframe');
-  iframe.src = src;
-  iframe.style.border = '0';
-  iframe.style.top = '0';
-  iframe.style.left = '0';
-  iframe.style.width = '100%';
-  iframe.style.height = '100%';
-  iframe.style.position = 'absolute';
-  iframe.frameBorder = '0';
-  iframe.allow = 'autoplay; fullscreen; picture-in-picture';
-  iframe.allowFullscreen = true;
-  iframe.title = 'Content from Vimeo';
-  iframe.loading = 'lazy';
-
-  wrapper.appendChild(iframe);
-  return wrapper;
+function mimeFromUrl(u = '') {
+  const lower = u.toLowerCase();
+  if (lower.endsWith('.mp4')) return 'video/mp4';
+  if (lower.endsWith('.webm')) return 'video/webm';
+  if (lower.endsWith('.ogg') || lower.endsWith('.ogv')) return 'video/ogg';
+  if (lower.endsWith('.m3u8')) return 'application/vnd.apple.mpegurl';
+  return 'video/mp4';
 }
 
-function getVideoElement(source) {
+function pickSource({ desktopUrl, mobileUrl }) {
+  const isMobile = window.matchMedia('(max-width: 48em)').matches;
+  if (isMobile && isDirectMediaUrl(mobileUrl)) return mobileUrl;
+  if (isDirectMediaUrl(desktopUrl)) return desktopUrl;
+  if (isDirectMediaUrl(mobileUrl)) return mobileUrl;
+  return '';
+}
+
+function createVideoEl({ desktopUrl, mobileUrl, altText = '' }) {
   const video = document.createElement('video');
+  video.className = 'hero-video';
   video.style.maxWidth = '100%';
   video.style.display = 'block';
   video.style.margin = '0 auto';
-  video.setAttribute('autoplay', '');
-  video.setAttribute('muted', '');
   video.setAttribute('playsinline', '');
+  video.setAttribute('muted', '');
   video.setAttribute('loop', '');
-  video.setAttribute('preload', 'auto');
+  video.setAttribute('preload', 'metadata');
+  if (!prefersReducedMotion.matches) video.setAttribute('autoplay', '');
+  if (altText) {
+    video.setAttribute('aria-label', altText);
+    video.setAttribute('title', altText);
+  }
 
+  const initialSrc = pickSource({ desktopUrl, mobileUrl });
   const sourceEl = document.createElement('source');
-  sourceEl.setAttribute('src', source);
-  sourceEl.setAttribute('type', `video/${source.split('.').pop()}`);
-
+  sourceEl.src = initialSrc;
+  sourceEl.type = mimeFromUrl(initialSrc);
   video.append(sourceEl);
-  video.addEventListener('canplay', () => {
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.then === 'function') {
-      playPromise.catch(() => {});
-    }
-  });
+
+  const safePlay = () => {
+    const p = video.play?.();
+    if (p && typeof p.then === 'function') p.catch(() => {});
+  };
+
+  if (prefersReducedMotion.matches) {
+    video.removeAttribute('autoplay');
+    video.setAttribute('controls', '');
+  }
+
+  video.addEventListener('canplay', safePlay, { once: true });
+
+  const maybeSwap = () => {
+    const desired = pickSource({ desktopUrl, mobileUrl });
+    if (!desired || desired === sourceEl.src) return;
+    const wasPaused = video.paused;
+    video.pause();
+    sourceEl.src = desired;
+    sourceEl.type = mimeFromUrl(desired);
+    video.load();
+    if (!wasPaused && !prefersReducedMotion.matches) safePlay();
+  };
+
+  const mq = window.matchMedia('(max-width: 48em)');
+  if (mq.addEventListener) mq.addEventListener('change', maybeSwap);
+  else if (mq.addListener) mq.addListener(maybeSwap);
+  window.addEventListener('orientationchange', maybeSwap);
+
   return video;
 }
 
-function loadVideoEmbed(block, link) {
-  if (block.dataset.embedLoaded === 'true') return;
-
-  let url;
-  try {
-    url = new URL(link, window.location.origin);
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.warn('Hero block: Invalid video URL', link);
-    return;
-  }
-
-  const isYoutube = /youtube\.com|youtu\.be/.test(url.href);
-  const isVimeo = /vimeo\.com/.test(url.href);
-
-  if (isYoutube) {
-    const embedWrapper = embedYoutube(url);
-    block.append(embedWrapper);
-    embedWrapper.querySelector('iframe').addEventListener('load', () => {
-      block.dataset.embedLoaded = 'true';
-    });
-  } else if (isVimeo) {
-    const embedWrapper = embedVimeo(url);
-    block.append(embedWrapper);
-    embedWrapper.querySelector('iframe').addEventListener('load', () => {
-      block.dataset.embedLoaded = 'true';
-    });
-  } else {
-    const videoEl = getVideoElement(url.href);
-    block.append(videoEl);
-    videoEl.addEventListener('canplay', () => {
-      block.dataset.embedLoaded = 'true';
-    });
-  }
-}
-
-export default async function decorate(block) {
-  block.classList.add('hero');
+function extractAuthoredValues(block) {
   const rows = Array.from(block.children);
-  let link = '';
-  let linkRow = null;
+  const urlRegex = /(https?:\/\/[^\s]+)/i;
+  const values = { desktopUrl: '', mobileUrl: '', altText: '' };
+  const urlRows = new Set();
 
   rows.forEach((row) => {
     const cells = Array.from(row.children);
     const cell = cells[0] || row;
     const a = cell.querySelector('a');
-    const cellText = (cell.textContent || '').trim();
+    const text = (cell.textContent || '').trim();
 
-    if (!link && a && a.href) {
-      link = a.href;
-      linkRow = row;
-      return;
+    if (a && a.href) {
+      if (!values.desktopUrl) {
+        values.desktopUrl = a.href.trim();
+        urlRows.add(row);
+        return;
+      }
+      if (!values.mobileUrl) {
+        values.mobileUrl = a.href.trim();
+        urlRows.add(row);
+        return;
+      }
     }
-    if (!link && /^(https?:\/\/|\/)/.test(cellText)) {
-      link = cellText;
-      linkRow = row;
+
+    const m = text.match(urlRegex);
+    if (m) {
+      if (!values.desktopUrl) {
+        values.desktopUrl = m[1].trim();
+        urlRows.add(row);
+        return;
+      }
+      if (!values.mobileUrl) {
+        values.mobileUrl = m[1].trim();
+        urlRows.add(row);
+        return;
+      }
+    }
+
+    if (!m && !values.altText) {
+      const lower = text.toLowerCase();
+      if (lower.includes('alt') || lower.includes('description')) {
+        const idx = text.indexOf(':');
+        values.altText = idx >= 0 ? text.slice(idx + 1).trim() : (text || '').trim();
+      }
     }
   });
 
+  return { ...values, rowsToExclude: Array.from(urlRows) };
+}
+
+function mountOverlayFrom(block, rowsToExclude = []) {
   const overlay = document.createElement('div');
   overlay.className = 'cmp-text';
   const frag = document.createDocumentFragment();
-  rows.forEach((row) => {
-    if (row !== linkRow) frag.append(row.cloneNode(true));
+  Array.from(block.children).forEach((row) => {
+    if (!rowsToExclude.includes(row)) {
+      frag.append(row.cloneNode(true));
+    }
   });
   overlay.append(frag);
+  return overlay;
+}
+
+export default async function decorate(block) {
+  block.classList.add('hero');
+
+  const {
+    desktopUrl, mobileUrl, altText, rowsToExclude,
+  } = extractAuthoredValues(block);
 
   block.textContent = '';
   block.dataset.embedLoaded = 'false';
 
-  if (overlay.childNodes.length) {
-    block.append(overlay);
-  }
+  const overlay = mountOverlayFrom(block, rowsToExclude);
+  if (overlay.childNodes.length) block.append(overlay);
 
-  if (!link) {
-    return;
-  }
+  const hasAnyDirect = isDirectMediaUrl(desktopUrl) || isDirectMediaUrl(mobileUrl);
+  if (!hasAnyDirect) return;
 
   const player = document.createElement('div');
   player.className = 'hero-player';
   block.append(player);
 
-  const start = () => loadVideoEmbed(player, link);
+  const start = () => {
+    const video = createVideoEl({ desktopUrl, mobileUrl, altText });
+    const wrapper = document.createElement('div');
+    wrapper.className = 'hero-video-background';
+    Object.assign(wrapper.style, {
+      left: '0',
+      width: '100%',
+      height: '0',
+      position: 'relative',
+      paddingBottom: '56.25%',
+    });
+    Object.assign(video.style, {
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+    });
+    wrapper.appendChild(video);
+    player.append(wrapper);
+
+    const markLoaded = () => {
+      block.dataset.embedLoaded = 'true';
+      video.removeEventListener('loadeddata', markLoaded);
+      video.removeEventListener('canplay', markLoaded);
+    };
+    video.addEventListener('loadeddata', markLoaded);
+    video.addEventListener('canplay', markLoaded);
+  };
+
   const observer = new IntersectionObserver(
     (entries) => {
       if (entries.some((e) => e.isIntersecting)) {
         observer.disconnect();
-        if (!prefersReducedMotion.matches) {
-          start();
-        } else {
-          start();
-        }
+        start();
       }
     },
     { rootMargin: '200px' },
   );
+
   observer.observe(block);
 }

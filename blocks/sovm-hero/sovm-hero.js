@@ -4,15 +4,9 @@ function isDirectMediaUrl(u = '') {
   try {
     const url = new URL(u, window.location.origin);
     if (/youtube\.com|youtu\.be|vimeo\.com/i.test(url.hostname)) return false;
-    const pathname = url.pathname.toLowerCase();
-    return (
-      pathname.endsWith('.mp4')
-      || pathname.endsWith('.webm')
-      || pathname.endsWith('.ogg')
-      || pathname.endsWith('.ogv')
-      || pathname.endsWith('.m3u8')
-    );
-  } catch (e) {
+    const p = url.pathname.toLowerCase();
+    return p.endsWith('.mp4') || p.endsWith('.webm') || p.endsWith('.ogg') || p.endsWith('.ogv') || p.endsWith('.m3u8');
+  } catch {
     return false;
   }
 }
@@ -44,7 +38,19 @@ function createVideoEl({ desktopUrl, mobileUrl, altText = '' }) {
   video.setAttribute('muted', '');
   video.setAttribute('loop', '');
   video.setAttribute('preload', 'metadata');
-  if (!prefersReducedMotion.matches) video.setAttribute('autoplay', '');
+  video.setAttribute('crossorigin', 'anonymous');
+  video.muted = true;
+  video.loop = true;
+  video.playsInline = true;
+  if (!prefersReducedMotion.matches) {
+    video.setAttribute('autoplay', '');
+    video.autoplay = true;
+  } else {
+    video.removeAttribute('autoplay');
+    video.autoplay = false;
+    video.setAttribute('controls', '');
+    video.controls = true;
+  }
   if (altText) {
     video.setAttribute('aria-label', altText);
     video.setAttribute('title', altText);
@@ -61,12 +67,13 @@ function createVideoEl({ desktopUrl, mobileUrl, altText = '' }) {
     if (p && typeof p.then === 'function') p.catch(() => {});
   };
 
-  if (prefersReducedMotion.matches) {
-    video.removeAttribute('autoplay');
-    video.setAttribute('controls', '');
-  }
+  const tryPlay = () => {
+    if (!prefersReducedMotion.matches) safePlay();
+  };
 
-  video.addEventListener('canplay', safePlay, { once: true });
+  video.addEventListener('loadeddata', tryPlay, { once: true });
+  video.addEventListener('canplay', tryPlay, { once: true });
+  video.addEventListener('canplaythrough', tryPlay, { once: true });
 
   const maybeSwap = () => {
     const desired = pickSource({ desktopUrl, mobileUrl });
@@ -87,8 +94,7 @@ function createVideoEl({ desktopUrl, mobileUrl, altText = '' }) {
   return video;
 }
 
-function extractAuthoredValues(block) {
-  const rows = Array.from(block.children);
+function extractFromRows(rows) {
   const urlRegex = /(https?:\/\/[^\s]+)/i;
   const values = { desktopUrl: '', mobileUrl: '', altText: '' };
   const urlRows = new Set();
@@ -138,11 +144,11 @@ function extractAuthoredValues(block) {
   return { ...values, rowsToExclude: Array.from(urlRows) };
 }
 
-function mountOverlayFrom(block, rowsToExclude = []) {
+function buildOverlayFromRows(rows, rowsToExclude = []) {
   const overlay = document.createElement('div');
   overlay.className = 'cmp-text';
   const frag = document.createDocumentFragment();
-  Array.from(block.children).forEach((row) => {
+  rows.forEach((row) => {
     if (!rowsToExclude.includes(row)) {
       frag.append(row.cloneNode(true));
     }
@@ -154,14 +160,14 @@ function mountOverlayFrom(block, rowsToExclude = []) {
 export default async function decorate(block) {
   block.classList.add('hero');
 
+  const originalRows = Array.from(block.children);
   const {
     desktopUrl, mobileUrl, altText, rowsToExclude,
-  } = extractAuthoredValues(block);
+  } = extractFromRows(originalRows);
+  const overlay = buildOverlayFromRows(originalRows, rowsToExclude);
 
   block.textContent = '';
   block.dataset.embedLoaded = 'false';
-
-  const overlay = mountOverlayFrom(block, rowsToExclude);
   if (overlay.childNodes.length) block.append(overlay);
 
   const hasAnyDirect = isDirectMediaUrl(desktopUrl) || isDirectMediaUrl(mobileUrl);
@@ -197,9 +203,11 @@ export default async function decorate(block) {
       block.dataset.embedLoaded = 'true';
       video.removeEventListener('loadeddata', markLoaded);
       video.removeEventListener('canplay', markLoaded);
+      video.removeEventListener('canplaythrough', markLoaded);
     };
     video.addEventListener('loadeddata', markLoaded);
     video.addEventListener('canplay', markLoaded);
+    video.addEventListener('canplaythrough', markLoaded);
   };
 
   const observer = new IntersectionObserver(
@@ -211,6 +219,5 @@ export default async function decorate(block) {
     },
     { rootMargin: '200px' },
   );
-
   observer.observe(block);
 }

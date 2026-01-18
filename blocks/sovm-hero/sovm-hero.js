@@ -28,20 +28,71 @@ function pickSource({ desktopUrl, mobileUrl }) {
   return '';
 }
 
+function showManualPlayOverlay(wrapper, video) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'hero-video-play';
+  Object.assign(btn.style, {
+    position: 'absolute',
+    zIndex: '2',
+    inset: '0',
+    margin: 'auto',
+    width: '72px',
+    height: '72px',
+    borderRadius: '50%',
+    border: '0',
+    background: 'rgba(0,0,0,.6)',
+    color: '#fff',
+    display: 'grid',
+    placeItems: 'center',
+    cursor: 'pointer',
+  });
+  btn.setAttribute('aria-label', 'Play background video');
+  btn.innerHTML = '▶';
+  const start = () => {
+    btn.remove();
+    video.controls = false;
+    video.play?.().catch(() => {});
+  };
+  btn.addEventListener('click', start);
+  wrapper.appendChild(btn);
+}
+
+function attachDiagnostics(video, sourceEl) {
+  // eslint-disable-next-line no-console, no-restricted-globals
+  const log = (...args) => { if (location.hostname === 'localhost') console.log('[sovm-hero]', ...args); };
+  // eslint-disable-next-line no-restricted-globals, no-console
+  const err = (...args) => { if (location.hostname === 'localhost') console.error('[sovm-hero]', ...args); };
+
+  video.addEventListener('error', () => err('video.error', video.error));
+  sourceEl.addEventListener('error', () => err('source.error for', sourceEl.src));
+  video.addEventListener('stalled', () => log('stalled'));
+  video.addEventListener('waiting', () => log('waiting'));
+  video.addEventListener('suspend', () => log('suspend'));
+  video.addEventListener('loadedmetadata', () => log('loadedmetadata', { readyState: video.readyState }));
+  video.addEventListener('canplay', () => log('canplay', { readyState: video.readyState }));
+  video.addEventListener('canplaythrough', () => log('canplaythrough', { readyState: video.readyState }));
+  video.addEventListener('playing', () => log('playing', { currentTime: video.currentTime }));
+}
+
 function createVideoEl({ desktopUrl, mobileUrl, altText = '' }) {
   const video = document.createElement('video');
   video.className = 'hero-video';
   video.style.maxWidth = '100%';
   video.style.display = 'block';
   video.style.margin = '0 auto';
+
   video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', '');
   video.setAttribute('muted', '');
   video.setAttribute('loop', '');
-  video.setAttribute('preload', 'metadata');
-  video.setAttribute('crossorigin', 'anonymous');
-  video.muted = true;
-  video.loop = true;
+  video.setAttribute('preload', 'auto');
+
   video.playsInline = true;
+  video.muted = true;
+  video.defaultMuted = true;
+  video.loop = true;
+
   if (!prefersReducedMotion.matches) {
     video.setAttribute('autoplay', '');
     video.autoplay = true;
@@ -51,42 +102,48 @@ function createVideoEl({ desktopUrl, mobileUrl, altText = '' }) {
     video.setAttribute('controls', '');
     video.controls = true;
   }
+
   if (altText) {
     video.setAttribute('aria-label', altText);
     video.setAttribute('title', altText);
   }
 
-  const initialSrc = pickSource({ desktopUrl, mobileUrl });
+  const src = pickSource({ desktopUrl, mobileUrl });
   const sourceEl = document.createElement('source');
-  sourceEl.src = initialSrc;
-  sourceEl.type = mimeFromUrl(initialSrc);
+  sourceEl.src = src;
+  sourceEl.type = mimeFromUrl(src);
   video.append(sourceEl);
 
-  const safePlay = () => {
+  attachDiagnostics(video, sourceEl);
+
+  const tryAutoplay = () => {
     const p = video.play?.();
-    if (p && typeof p.then === 'function') p.catch(() => {});
+    if (p && typeof p.then === 'function') {
+      p.catch(() => {});
+    }
   };
 
-  const tryPlay = () => {
-    if (!prefersReducedMotion.matches) safePlay();
-  };
+  if (!prefersReducedMotion.matches) {
+    const eager = () => tryAutoplay();
+    video.addEventListener('loadeddata', eager, { once: true });
+    video.addEventListener('canplay', eager, { once: true });
+    video.addEventListener('canplaythrough', eager, { once: true });
+  }
 
-  video.addEventListener('loadeddata', tryPlay, { once: true });
-  video.addEventListener('canplay', tryPlay, { once: true });
-  video.addEventListener('canplaythrough', tryPlay, { once: true });
-
+  const mq = window.matchMedia('(max-width: 48em)');
   const maybeSwap = () => {
     const desired = pickSource({ desktopUrl, mobileUrl });
     if (!desired || desired === sourceEl.src) return;
-    const wasPaused = video.paused;
+    const { paused } = video;
     video.pause();
     sourceEl.src = desired;
     sourceEl.type = mimeFromUrl(desired);
     video.load();
-    if (!wasPaused && !prefersReducedMotion.matches) safePlay();
+    if (!paused && !prefersReducedMotion.matches) {
+      const p = video.play?.();
+      if (p && typeof p.then === 'function') p.catch(() => {});
+    }
   };
-
-  const mq = window.matchMedia('(max-width: 48em)');
   if (mq.addEventListener) mq.addEventListener('change', maybeSwap);
   else if (mq.addListener) mq.addListener(maybeSwap);
   window.addEventListener('orientationchange', maybeSwap);
@@ -106,30 +163,14 @@ function extractFromRows(rows) {
     const text = (cell.textContent || '').trim();
 
     if (a && a.href) {
-      if (!values.desktopUrl) {
-        values.desktopUrl = a.href.trim();
-        urlRows.add(row);
-        return;
-      }
-      if (!values.mobileUrl) {
-        values.mobileUrl = a.href.trim();
-        urlRows.add(row);
-        return;
-      }
+      if (!values.desktopUrl) { values.desktopUrl = a.href.trim(); urlRows.add(row); return; }
+      if (!values.mobileUrl) { values.mobileUrl = a.href.trim(); urlRows.add(row); return; }
     }
 
     const m = text.match(urlRegex);
     if (m) {
-      if (!values.desktopUrl) {
-        values.desktopUrl = m[1].trim();
-        urlRows.add(row);
-        return;
-      }
-      if (!values.mobileUrl) {
-        values.mobileUrl = m[1].trim();
-        urlRows.add(row);
-        return;
-      }
+      if (!values.desktopUrl) { values.desktopUrl = m[1].trim(); urlRows.add(row); return; }
+      if (!values.mobileUrl) { values.mobileUrl = m[1].trim(); urlRows.add(row); return; }
     }
 
     if (!m && !values.altText) {
@@ -161,9 +202,7 @@ export default async function decorate(block) {
   block.classList.add('hero');
 
   const originalRows = Array.from(block.children);
-  const {
-    desktopUrl, mobileUrl, altText, rowsToExclude,
-  } = extractFromRows(originalRows);
+  const { desktopUrl, mobileUrl, altText, rowsToExclude } = extractFromRows(originalRows);
   const overlay = buildOverlayFromRows(originalRows, rowsToExclude);
 
   block.textContent = '';
@@ -182,20 +221,12 @@ export default async function decorate(block) {
     const wrapper = document.createElement('div');
     wrapper.className = 'hero-video-background';
     Object.assign(wrapper.style, {
-      left: '0',
-      width: '100%',
-      height: '0',
-      position: 'relative',
-      paddingBottom: '56.25%',
-    });
+      left: '0', width: '100%', height: '0', position: 'relative', paddingBottom: '56.25%',
+});
     Object.assign(video.style, {
-      position: 'absolute',
-      top: '0',
-      left: '0',
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-    });
+      position: 'absolute', top: '0', left: '0', width: '100%', height: '100%', objectFit: 'cover',
+});
+
     wrapper.appendChild(video);
     player.append(wrapper);
 
@@ -208,6 +239,10 @@ export default async function decorate(block) {
     video.addEventListener('loadeddata', markLoaded);
     video.addEventListener('canplay', markLoaded);
     video.addEventListener('canplaythrough', markLoaded);
+
+    setTimeout(() => {
+      if (video.paused || video.currentTime === 0) showManualPlayOverlay(wrapper, video);
+    }, 1200);
   };
 
   const observer = new IntersectionObserver(

@@ -285,9 +285,6 @@
   }
 }
 
-
-/* === FORCE FULL‑BLEED FOR SOVM HERO (MATCH REFERENCE SITE) === */
-
 .section.sovm-hero-container {
   width: 100vw !important;
   max-width: 100vw !important;
@@ -297,7 +294,6 @@
   padding-right: 0 !important;
 }
 
-/* Break the inner Franklin wrapper too */
 .section.sovm-hero-container .sovm-hero-wrapper,
 .section.sovm-hero-container .sovm-hero.block {
   width: 100vw !important;
@@ -306,17 +302,15 @@
   padding: 0 !important;
 }
 
-/* Force hero background video to span full screen width & taller height */
 .section.sovm-hero-container .hero-video-background {
   width: 100vw !important;
   max-width: 100vw !important;
   margin: 0 !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  padding-bottom: 65% !important; /* TALLER HERO – tuned to match reference */
+  padding-bottom: 65% !important;
 }
 
-/* Video must cover fully */
 .section.sovm-hero-container .hero-video-background > video {
   width: 100% !important;
   height: 100% !important;
